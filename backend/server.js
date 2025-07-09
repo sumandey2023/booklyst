@@ -12,6 +12,8 @@ console.log("hi");
 console.log("hi");
 console.log("hi");
 console.log("test69");
+console.log("test54464");
+
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);
 });
