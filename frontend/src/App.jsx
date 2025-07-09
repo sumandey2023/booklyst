@@ -1,20 +1,11 @@
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
 import MainRoute from "./routes/MainRoute";
+
+import Home from "./pages/Home";
 
 const App = () => {
   return (
     <>
-      <SignedOut>
-        <SignInButton />
-      </SignedOut>
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
+      <Home />
       <MainRoute />
     </>
   );

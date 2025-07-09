@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import Auth from "../components/Auth";
 
 const MainRoute = () => {
   return (
@@ -7,7 +8,7 @@ const MainRoute = () => {
       <Route path="/" />
       <Route path="/" />
       <Route path="/" />
-      <Route path="/" />
+      <Route path="/auth" element={<Auth />} />
     </Routes>
   );
 };
