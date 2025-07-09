@@ -6,9 +6,6 @@ const app = express();
 const PORT = process.env.PORT;
 app.use(express.json());
 connectDB();
-
-
-
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);
 });
