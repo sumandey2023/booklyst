@@ -4,6 +4,7 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/clerk-react";
+import MainRoute from "./routes/MainRoute";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
       <SignedIn>
         <UserButton />
       </SignedIn>
+      <MainRoute />
     </>
   );
 };
