@@ -9,6 +9,7 @@ app.use(express.json());
 connectDB();
 console.log("suman");
 console.log("hi");
+console.log("hi");
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);
 });
