@@ -7,7 +7,6 @@ const PORT = process.env.PORT;
 app.use(express.json());
 //  connect to the database
 connectDB();
-console.log("testing");
 
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);
