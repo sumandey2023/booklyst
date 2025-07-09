@@ -8,7 +8,6 @@ app.use(express.json());
 //  connect to the database
 connectDB();
 
-console.log("bibek jana");
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);
 });
