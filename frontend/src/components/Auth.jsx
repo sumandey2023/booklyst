@@ -18,7 +18,7 @@ const Auth = () => {
   return (
     <div>
       <SignedOut>
-        <SignInButton ref={signInBtnRef} />
+        <SignInButton ref={signInBtnRef} redirectUrl="/rolelogin" />
       </SignedOut>
       <SignedIn>
         <UserButton />
