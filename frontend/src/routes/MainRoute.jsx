@@ -4,6 +4,7 @@ import AccountSetup from "../components/AccountSetup";
 import SetupForm from "../components/SetupForm";
 import Auth from "../components/Auth";
 import LiveView from "../components/liveview";
+import TimeScheduleForm from "../components/TimeScheduleForm";
 
 const MainRoute = () => {
   return (
@@ -13,6 +14,7 @@ const MainRoute = () => {
       <Route path="/" />
       <Route path="/auth" element={<Auth />} />
       <Route path="/accountsetup/form/liveview" element={<LiveView />} />
+      <Route path="/accountsetup/form/schedule" element={<TimeScheduleForm />} />
     </Routes>
   );
 };

@@ -6,7 +6,7 @@ const BusinessDetails = require("../models/BusinessDetails");
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-
+const Schedule = require("../models/usescheduleSchema");
 // You can remove protectedRoute if you want this route public
 router.post("/createUserSetup", upload.array("images"), async (req, res) => {
   try {
@@ -58,6 +58,26 @@ router.post("/createUserSetup", upload.array("images"), async (req, res) => {
   } catch (error) {
     console.error("Create Block Error:", error);
     res.status(500).json({ success: false, error: "Server Error" });
+  }
+});
+
+router.post("/schedule", async (req, res) => {
+  try {
+    const { timeLimit, availability } = req.body;
+
+    console.log(timeLimit, availability);
+
+    const newSchedule = new Schedule({
+      timeLimit,
+      availability,
+    });
+
+    await newSchedule.save();
+
+    res.status(201).json({ message: "Schedule saved successfully!" });
+  } catch (err) {
+    console.error("Error saving schedule:", err);
+    res.status(500).json({ error: "Internal server error." });
   }
 });
 

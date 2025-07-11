@@ -239,7 +239,13 @@ const SetupForm = () => {
       }
       setLoading(false);
       resetForm();
-      navigate("/admin");
+      navigate("/accountsetup/form/schedule", {
+        state: {
+          authorName: user?.fullName || "Unknown",
+          authorEmail:
+            user?.emailAddresses?.[0]?.emailAddress || "unknown@example.com",
+        },
+      });
     } catch (err) {
       console.error("Submit error:", err);
       setLoading(false);
@@ -350,7 +356,7 @@ const SetupForm = () => {
                 "&:hover": { bgcolor: lightPrimary },
               }}
             >
-              Submit Block
+              Submit
             </Button>
             {!blogId && (
               <Button
