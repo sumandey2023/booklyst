@@ -19,9 +19,11 @@ const AccountSetup = () => {
 
   const handleContinue = () => {
     const data = {
-      type: selectedType,
+      type: selectedService,
       service: selectedType === "service" ? selectedService : null,
     };
+
+    // ✅ This stores selected type and service in navigation state
     navigate("/AccountSetup/form", { state: data });
   };
 

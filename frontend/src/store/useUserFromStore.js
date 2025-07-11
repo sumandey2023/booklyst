@@ -1,7 +1,7 @@
 // store/useUserFromStore.js
 import { create } from "zustand";
 import axios from "axios";
-
+import { axiosInstanace } from "../lib.js/axios";
 const useUserFromStore = create((set, get) => ({
   form: { type: "" },
   content: [],
@@ -71,7 +71,7 @@ const useUserFromStore = create((set, get) => ({
   // ✅ New function: createUserSetup
   createUserSetup: async (formData) => {
     try {
-      const res = await axios.post(`/api/blog/create`, formData, {
+      const res = await axiosInstanace.post(`/auth/createUserSetup`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return res.data;
