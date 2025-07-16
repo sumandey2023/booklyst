@@ -2,11 +2,12 @@ const express = require("express");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
-const BusinessDetails = require("../models/BusinessDetails");
+const ServiceDetails = require("../models/serviceSchema");
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const Schedule = require("../models/usescheduleSchema");
+
 const User = require("../models/userSchema");
 const jwt = require("jsonwebtoken"); // missing import
 const protectedRoute = require("../middleware/protectedRoute");
@@ -19,58 +20,62 @@ const emailJwtSign = (email) => {
   return jwt.sign(payload, secret, options);
 };
 
-router.post("/createUserSetup", upload.array("images"), async (req, res) => {
-  try {
-    console.log("hi");
-    const rawContent = JSON.parse(req.body.content);
-    const content = rawContent.map(({ type, value }) => ({ type, value }));
-    const files = req.files;
+router.post(
+  "/createUserSetup",
+  protectedRoute,
+  upload.array("images"),
+  async (req, res) => {
+    try {
+      console.log("hi");
+      const rawContent = JSON.parse(req.body.content);
+      const content = rawContent.map(({ type, value }) => ({ type, value }));
+      const files = req.files;
+      let fileIndex = 0;
+      for (let i = 0; i < content.length; i++) {
+        if (content[i].type === "image") {
+          const file = files[fileIndex];
 
-    let fileIndex = 0;
-    for (let i = 0; i < content.length; i++) {
-      if (content[i].type === "image") {
-        const file = files[fileIndex];
+          const uploadResult = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: "blocks" },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+              }
+            );
+            streamifier.createReadStream(file.buffer).pipe(stream);
+          });
 
-        const uploadResult = await new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder: "blocks" },
-            (error, result) => {
-              if (error) return reject(error);
-              resolve(result);
-            }
-          );
-          streamifier.createReadStream(file.buffer).pipe(stream);
-        });
-
-        content[i].value = uploadResult.secure_url;
-        fileIndex++;
+          content[i].value = uploadResult.secure_url;
+          fileIndex++;
+        }
       }
-    }
 
-    let uploadedById = null;
+      let uploadedById = null;
 
-    // Optional: Try finding user by email if it exists in the request
-    if (req.user) {
-      const foundUser = await User.findOne({ email: req.user }).select("_id");
-      if (foundUser) {
-        uploadedById = foundUser._id;
+      // Optional: Try finding user by email if it exists in the request
+      if (req.user) {
+        const foundUser = await User.findOne({ email: req.user }).select("_id");
+        if (foundUser) {
+          uploadedById = foundUser._id;
+        }
       }
+
+      const newBlock = new ServiceDetails({
+        ServiceType: req.body.type,
+        content,
+        ...(uploadedById && { uploadedBy: uploadedById }), // Only include if found
+      });
+
+      await newBlock.save();
+
+      res.status(201).json({ success: true, data: newBlock });
+    } catch (error) {
+      console.error("Create Block Error:", error);
+      res.status(500).json({ success: false, error: "Server Error" });
     }
-
-    const newBlock = new BusinessDetails({
-      ServiceType: req.body.type,
-      content,
-      ...(uploadedById && { uploadedBy: uploadedById }), // Only include if found
-    });
-
-    await newBlock.save();
-
-    res.status(201).json({ success: true, data: newBlock });
-  } catch (error) {
-    console.error("Create Block Error:", error);
-    res.status(500).json({ success: false, error: "Server Error" });
   }
-});
+);
 
 router.post("/schedule", async (req, res) => {
   try {

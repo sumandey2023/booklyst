@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const businessDetailsScheama = mongoose.Schema(
+const serviceDetailsScheama = mongoose.Schema(
   {
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -37,8 +37,5 @@ const businessDetailsScheama = mongoose.Schema(
   { timestamps: true }
 );
 
-const BusinessDetails = mongoose.model(
-  "BusinessDetails",
-  businessDetailsScheama
-);
-module.exports = BusinessDetails;
+const ServiceDetails = mongoose.model("ServiceDetails", serviceDetailsScheama);
+module.exports = ServiceDetails;
