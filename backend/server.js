@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./src/db/connectdb");
 const authRoutes = require("./src/routes/authRoute");
+const serviceRouter = require("./src/routes/serviceRouter");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
 const COOKIE_SECRET = process.env.COOKIE_SECRET || "your_cookie_secret";
@@ -25,6 +26,7 @@ app.use(
 
 app.use(cookieParser(COOKIE_SECRET)); // ✅ This line is required for signed cookies
 app.use("/api/auth", authRoutes);
+app.use("/api/service", serviceRouter);
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);
 });
