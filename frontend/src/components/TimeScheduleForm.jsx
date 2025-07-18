@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Typography,
-  Stack,
   TextField,
   MenuItem,
   FormControl,
   InputLabel,
   Select,
   Button,
-  Divider,
   IconButton,
+  Divider,
+  Typography,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Trash2, Pencil } from "lucide-react";
-import useScheduleStore from "../store/useScheduleStore"; // adjust path
+import useScheduleStore from "../store/useScheduleStore";
 
 const daysOfWeek = [
   "Monday",
@@ -27,7 +25,6 @@ const daysOfWeek = [
   "Sunday",
 ];
 
-// Convert 24-hour format to 12-hour format
 const to12HourFormat = (time) => {
   if (!time) return "";
   const [hourStr, minute] = time.split(":");
@@ -37,15 +34,12 @@ const to12HourFormat = (time) => {
   return `${hour}:${minute} ${ampm}`;
 };
 
-// Convert 12-hour format back to 24-hour (needed for editing pre-fill)
 const to24HourFormat = (time12) => {
   const [time, modifier] = time12.split(" ");
   let [hours, minutes] = time.split(":");
   hours = parseInt(hours, 10);
-
   if (modifier === "PM" && hours !== 12) hours += 12;
   if (modifier === "AM" && hours === 12) hours = 0;
-
   return `${hours.toString().padStart(2, "0")}:${minutes}`;
 };
 
@@ -57,12 +51,12 @@ const TimeScheduleForm = () => {
   const [selectedDay, setSelectedDay] = useState("");
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
-  const [editIndex, setEditIndex] = useState(null); // New
+  const [editIndex, setEditIndex] = useState(null);
 
   const {
     availability,
-    timeLimit,
-    setTimeLimit,
+    serviceCharge,
+    setServiceCharge,
     addAvailabilitySlot,
     submitSchedule,
     setAuthorInfo,
@@ -136,18 +130,18 @@ const TimeScheduleForm = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto", mt: 6, px: 2 }}>
-      <Typography variant="h4" fontWeight={700} color="#388087" gutterBottom>
+    <div className="max-w-xl mx-auto mt-10 px-4">
+      <h2 className="text-3xl font-bold text-[#388087] mb-6">
         ⏰ Set Your Weekly Availability
-      </Typography>
-      <Divider sx={{ my: 3 }} />
+      </h2>
+      <Divider className="mb-6" />
 
-      <Stack spacing={2}>
+      <div className="flex flex-col gap-4">
         <TextField
-          label="Appointment Duration (in minutes)"
+          label="Service Charge (in ₹)"
           type="number"
-          value={timeLimit}
-          onChange={(e) => setTimeLimit(e.target.value)}
+          value={serviceCharge}
+          onChange={(e) => setServiceCharge(e.target.value)}
         />
 
         <FormControl fullWidth>
@@ -180,54 +174,49 @@ const TimeScheduleForm = () => {
           InputLabelProps={{ shrink: true }}
         />
 
-        <Button variant="outlined" onClick={handleAddSlot}>
+        <Button
+          variant="outlined"
+          onClick={handleAddSlot}
+          className="!text-sm !py-2"
+        >
           {editIndex !== null ? "✏️ Update Slot" : "➕ Add Slot"}
         </Button>
-      </Stack>
+      </div>
 
-      <Box mt={4}>
+      <div className="mt-8">
         <Typography variant="h6" fontWeight={600}>
           🗓️ Added Time Slots
         </Typography>
-        <Stack spacing={1} mt={2}>
+        <div className="flex flex-col gap-2 mt-4">
           {availability.map((slot, i) => (
-            <Box
+            <div
               key={i}
-              sx={{
-                p: 2,
-                border: "1px solid #ccc",
-                borderRadius: 2,
-                bgcolor: "#f9f9f9",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+              className="p-4 border border-gray-300 rounded-lg bg-gray-50 flex justify-between items-center"
             >
-              <span>
+              <span className="font-medium">
                 {slot.day}: {slot.from} - {slot.to}
               </span>
-              <Box>
+              <div>
                 <IconButton onClick={() => handleEdit(slot, i)} color="primary">
                   <Pencil size={18} />
                 </IconButton>
                 <IconButton onClick={() => handleDelete(i)} color="error">
                   <Trash2 size={18} />
                 </IconButton>
-              </Box>
-            </Box>
+              </div>
+            </div>
           ))}
-        </Stack>
-      </Box>
+        </div>
+      </div>
 
       <Button
         variant="contained"
         onClick={handleSubmit}
-        sx={{ mt: 4, bgcolor: "#388087", fontWeight: 600 }}
-        fullWidth
+        className="w-full !bg-[#388087] !text-white !mt-6 !font-semibold"
       >
         ✅ Save Schedule
       </Button>
-    </Box>
+    </div>
   );
 };
 

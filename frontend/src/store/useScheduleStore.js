@@ -1,60 +1,51 @@
-// store/useScheduleStore.js
 import { create } from "zustand";
-import axios from "axios";
-import { axiosInstanace } from "../lib.js/axios";
+import { axiosInstanace } from "../lib.js/axios"; // Adjust if needed
+
 const useScheduleStore = create((set, get) => ({
   authorName: "",
   authorEmail: "",
-  timeLimit: 50,
+  serviceCharge: "", // Replaced timeLimit
   availability: [],
 
   setAuthorInfo: ({ name, email }) =>
     set({ authorName: name, authorEmail: email }),
 
-  setTimeLimit: (limit) => set({ timeLimit: limit }),
+  setServiceCharge: (value) => set({ serviceCharge: value }),
 
   addAvailabilitySlot: (slot) =>
-    set((state) => ({
-      availability: [...state.availability, slot],
-    })),
+    set((state) => ({ availability: [...state.availability, slot] })),
 
   removeAvailabilitySlot: (index) =>
     set((state) => ({
       availability: state.availability.filter((_, i) => i !== index),
     })),
+
+  updateAvailabilitySlot: (index, updatedSlot) =>
+    set((state) => {
+      const updated = [...state.availability];
+      updated[index] = updatedSlot;
+      return { availability: updated };
+    }),
+
+  submitSchedule: async () => {
+    const { authorName, authorEmail, serviceCharge, availability } = get();
+    const payload = {
+      name: authorName,
+      email: authorEmail,
+      serviceCharge,
+      availability,
+    };
+
+    await axiosInstanace.post("/auth/schedule", payload);
+  },
 
   resetSchedule: () =>
     set({
       authorName: "",
       authorEmail: "",
-      timeLimit: 50,
+      serviceCharge: "",
       availability: [],
     }),
-
-  // ✅ SEND TO BACKEND FROM STORE
-  submitSchedule: async () => {
-    const { timeLimit, availability } = get();
-    console.log(timeLimit, availability);
-    const payload = {
-      timeLimit: `${timeLimit} minutes`,
-      availability,
-    };
-    console.log("hi i am bibek ");
-    const res = await axiosInstanace.post("/auth/schedule", payload);
-    return res.data;
-  },
-
-  updateAvailabilitySlot: (index, newSlot) =>
-    set((state) => {
-      const updated = [...state.availability];
-      updated[index] = newSlot;
-      return { availability: updated };
-    }),
-
-  removeAvailabilitySlot: (index) =>
-    set((state) => ({
-      availability: state.availability.filter((_, i) => i !== index),
-    })),
 }));
 
 export default useScheduleStore;

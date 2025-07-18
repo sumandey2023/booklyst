@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 
 const scheduleSchema = new mongoose.Schema(
   {
-    author: {
+    uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    timeLimit: {
-      type: String, // e.g., "50 minutes"
+    serviceCharge: {
+      type: String,
       required: true,
     },
     availability: [

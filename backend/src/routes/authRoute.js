@@ -77,32 +77,30 @@ router.post(
   }
 );
 
-router.post("/schedule", async (req, res) => {
+router.post("/schedule", protectedRoute, async (req, res) => {
   try {
-    const { timeLimit, availability } = req.body;
+    const { availability, serviceCharge } = req.body;
+    console.log({ availability, serviceCharge });
 
-    console.log(timeLimit, availability);
+    if (!availability || !Array.isArray(availability)) {
+      return res.status(400).json({ error: "Availability must be provided." });
+    }
 
+    if (!serviceCharge) {
+      return res.status(400).json({ error: "Service charge is required." });
+    }
+    if (req.user) {
+      const foundUser = await User.findOne({ email: req.user }).select("_id");
+      if (foundUser) {
+        uploadedById = foundUser._id;
+      }
+    }
     const newSchedule = new Schedule({
-      timeLimit,
       availability,
+      serviceCharge,
+      uploadedBy: uploadedById,
     });
 
-    await newSchedule.save();
-
-    res.status(201).json({ message: "Schedule saved successfully!" });
-  } catch (err) {
-    console.error("Error saving schedule:", err);
-    res.status(500).json({ error: "Internal server error." });
-  }
-});
-
-router.post("/schedule", async (req, res) => {
-  try {
-    const { timeLimit, availability } = req.body;
-    console.log(timeLimit, availability);
-
-    const newSchedule = new Schedule({ timeLimit, availability });
     await newSchedule.save();
 
     res.status(201).json({ message: "Schedule saved successfully!" });
