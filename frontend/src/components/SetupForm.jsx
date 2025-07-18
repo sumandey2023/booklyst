@@ -283,7 +283,7 @@ const SetupForm = () => {
           gutterBottom
           sx={{ mt: isMobile ? 1 : 3, color: primaryColor }}
         >
-          \ud83d\udcc4 Content Block Builder
+          Add Your Service Details
         </Typography>
 
         <Divider sx={{ my: 3, borderColor: lightPrimary }} />
