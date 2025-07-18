@@ -1,3 +1,5 @@
+// ✅ SetupForm.jsx - Full Updated Code with blogId and content prefill
+
 import React, { useEffect, useState } from "react";
 import {
   Typography,
@@ -69,7 +71,6 @@ const BlockItem = React.memo(
       >
         <Trash2 size={18} />
       </IconButton>
-
       {item.type === "image" ? (
         <>
           <Typography fontWeight={600} gutterBottom>
@@ -166,17 +167,16 @@ const SetupForm = () => {
     resetForm,
     createUserSetup,
     setPreviews,
-    initializeFromLiveView,
   } = useUserFromStore();
 
-  const { fetchBlogById, sendForUPdateBLogs } = useAdminStore();
+  const { serviceAdminData, sendForUPdateBLogs } = useAdminStore();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { user } = useUser();
 
   useEffect(() => {
     if (restoredContent?.length) {
-      resetForm(); // reset before initializing
+      resetForm();
       setForm({ type: passedType });
       setPreviews(restoredPreviews || {});
       restoredContent.forEach((block) => {
@@ -184,12 +184,20 @@ const SetupForm = () => {
         addData(block.type, id, block.value || "");
       });
     } else if (blogId) {
-      fetchBlog();
+      const blogData = serviceAdminData?.find((item) => item._id === blogId);
+      if (blogData?.content?.length) {
+        resetForm();
+        setForm({ type: blogData.ServiceType });
+        blogData.content.forEach((block) => {
+          const id = block.id || crypto.randomUUID();
+          addData(block.type, id, block.value || "");
+        });
+      }
     } else {
       resetForm();
       setForm({ type: passedType });
     }
-  }, [blogId, location.key]); // IMPORTANT: use location.key instead of restoredContent
+  }, [blogId, location.key, restoredContent, serviceAdminData]);
 
   const handleSelectChange = (e) => {
     const type = e.target.value;
@@ -205,7 +213,6 @@ const SetupForm = () => {
       setTypeError(true);
       return;
     }
-
     const formData = new FormData();
     const cleanContent = content.map((item) => {
       if (item.type === "image") {
@@ -225,7 +232,6 @@ const SetupForm = () => {
       "authorEmail",
       user?.emailAddresses?.[0]?.emailAddress || "unknown@example.com"
     );
-
     Object.entries(images).forEach(([id, file]) => {
       formData.append("images", file, id);
     });
@@ -249,7 +255,7 @@ const SetupForm = () => {
     } catch (err) {
       console.error("Submit error:", err);
       setLoading(false);
-      toast.error("❌ Failed to submit blog. Please try again.");
+      toast.error("\u274C Failed to submit blog. Please try again.");
     }
   };
 
@@ -277,7 +283,7 @@ const SetupForm = () => {
           gutterBottom
           sx={{ mt: isMobile ? 1 : 3, color: primaryColor }}
         >
-          📄 Content Block Builder
+          \ud83d\udcc4 Content Block Builder
         </Typography>
 
         <Divider sx={{ my: 3, borderColor: lightPrimary }} />

@@ -7,6 +7,7 @@ import LiveView from "../components/liveview";
 import TimeScheduleForm from "../components/TimeScheduleForm";
 import Home from "../pages/Home";
 import Service from "../pages/Service";
+import ServiceAdmin from "../pages/admin/serviceadmin";
 
 const MainRoute = () => {
   return (
@@ -17,6 +18,7 @@ const MainRoute = () => {
       <Route path="/auth" element={<Auth />} />
       <Route path="/accountsetup/form/liveview" element={<LiveView />} />
       <Route path="/service" element={<Service />} />
+      <Route path="/serviceadmin" element={<ServiceAdmin />} />
 
       <Route
         path="/accountsetup/form/schedule"

@@ -1,20 +1,18 @@
 // src/store/useAdminStore.js
 import { create } from "zustand";
+import { axiosInstanace } from "../lib.js/axios";
 
-const useAdminStore = create(() => ({
-  fetchBlogById: async (id) => {
-    const res = await fetch(`/api/blog/${id}`);
-    if (!res.ok) throw new Error("Blog not found");
-    return await res.json();
-  },
+const useAdminStore = create((set) => ({
+  serviceAdminData: [],
 
-  sendForUPdateBLogs: async (id, formData) => {
-    const res = await fetch(`/api/blog/update/${id}`, {
-      method: "PUT",
-      body: formData,
-    });
-    if (!res.ok) throw new Error("Update failed");
-    return await res.json();
+  fetchServiceAdminData: async () => {
+    try {
+      console.log("hi");
+      const res = await axiosInstanace.get("/admin/fetchserviceadmindata");
+      set({ serviceAdminData: res.data });
+    } catch (error) {
+      console.error("Error fetching admin service data:", error);
+    }
   },
 }));
 
