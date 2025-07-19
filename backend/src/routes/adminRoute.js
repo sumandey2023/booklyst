@@ -20,9 +20,9 @@ const emailJwtSign = (email) => {
 };
 router.get("/fetchserviceadmindata", protectedRoute, async (req, res) => {
   try {
-    const userEmail = req.user; // assuming req.user contains email from middleware
-    const user = await User.findOne({ email: userEmail }).select("_id");
+    const userEmail = req.user;
 
+    const user = await User.findOne({ email: userEmail }).select("_id");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -35,13 +35,17 @@ router.get("/fetchserviceadmindata", protectedRoute, async (req, res) => {
       },
       {
         $lookup: {
-          from: "schedules",
+          from: "schedules", // collection name must match actual MongoDB collection
           localField: "uploadedBy",
           foreignField: "uploadedBy",
           as: "schedules",
         },
       },
     ]);
+
+    if (!services.length) {
+      console.log("No services found for:", userEmail);
+    }
 
     res.json(services);
   } catch (error) {

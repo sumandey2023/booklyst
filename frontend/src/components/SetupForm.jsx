@@ -239,19 +239,21 @@ const SetupForm = () => {
     try {
       setLoading(true);
       if (blogId) {
-        await sendForUPdateBLogs(blogId, formData);
-      } else {
+        console.log(formData);
         await createUserSetup(formData);
+      } else {
+        console.log(formData);
+        await createUserSetup(formData);
+        navigate("/accountsetup/form/schedule", {
+          state: {
+            authorName: user?.fullName || "Unknown",
+            authorEmail:
+              user?.emailAddresses?.[0]?.emailAddress || "unknown@example.com",
+          },
+        });
       }
       setLoading(false);
       resetForm();
-      navigate("/accountsetup/form/schedule", {
-        state: {
-          authorName: user?.fullName || "Unknown",
-          authorEmail:
-            user?.emailAddresses?.[0]?.emailAddress || "unknown@example.com",
-        },
-      });
     } catch (err) {
       console.error("Submit error:", err);
       setLoading(false);

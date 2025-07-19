@@ -26,14 +26,19 @@ router.post(
   upload.array("images"),
   async (req, res) => {
     try {
-      console.log("hi");
       const rawContent = JSON.parse(req.body.content);
       const content = rawContent.map(({ type, value }) => ({ type, value }));
-      const files = req.files;
+      console.log(content);
+      const files = req.files || [];
       let fileIndex = 0;
       for (let i = 0; i < content.length; i++) {
-        if (content[i].type === "image") {
+        if (content[i].type === "image" && !content[i].value) {
           const file = files[fileIndex];
+          if (!file || !file.buffer) {
+            return res
+              .status(400)
+              .json({ success: false, error: "Image file is missing" });
+          }
 
           const uploadResult = await new Promise((resolve, reject) => {
             const stream = cloudinary.uploader.upload_stream(
@@ -51,28 +56,35 @@ router.post(
         }
       }
 
-      let uploadedById = null;
+      const foundUser = await User.findOne({ email: req.user }).select("_id");
 
-      // Optional: Try finding user by email if it exists in the request
-      if (req.user) {
-        const foundUser = await User.findOne({ email: req.user }).select("_id");
-        if (foundUser) {
-          uploadedById = foundUser._id;
+      if (foundUser && foundUser._id) {
+        const service = await ServiceDetails.findOne({
+          uploadedBy: foundUser._id,
+        });
+
+        if (service) {
+          service.content = content;
+          await service.save();
+          return res.status(201).json({ success: true, data: service });
         }
+
+        const newBlock = new ServiceDetails({
+          ServiceType: req.body.type,
+          content,
+          uploadedBy: foundUser._id,
+        });
+
+        await newBlock.save();
+        return res.status(201).json({ success: true, data: newBlock });
       }
 
-      const newBlock = new ServiceDetails({
-        ServiceType: req.body.type,
-        content,
-        ...(uploadedById && { uploadedBy: uploadedById }), // Only include if found
-      });
-
-      await newBlock.save();
-
-      res.status(201).json({ success: true, data: newBlock });
+      return res
+        .status(404)
+        .json({ success: false, error: "User not found or unauthorized" });
     } catch (error) {
       console.error("Create Block Error:", error);
-      res.status(500).json({ success: false, error: "Server Error" });
+      return res.status(500).json({ success: false, error: "Server Error" });
     }
   }
 );
