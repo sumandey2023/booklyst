@@ -7,7 +7,6 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const Schedule = require("../models/usescheduleSchema");
-
 const User = require("../models/userSchema");
 const jwt = require("jsonwebtoken"); // missing import
 const protectedRoute = require("../middleware/protectedRoute");
@@ -178,6 +177,71 @@ router.post("/signOut", protectedRoute, (req, res) => {
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error signing out" });
+  }
+});
+
+router.put("/schedule", protectedRoute, async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const { serviceCharge, availability } = req.body;
+    console.log(blogId);
+    const foundUser = await User.findOne({ email: req.user }).select("_id");
+    const scheduleDoc = await Schedule.findOne({ uploadedBy: foundUser._id });
+    if (!scheduleDoc) {
+      return res.status(404).json({ message: "Schedule not found" });
+    }
+
+    scheduleDoc.serviceCharge = serviceCharge;
+    scheduleDoc.availability = availability;
+
+    await scheduleDoc.save();
+
+    res.status(200).json({ message: "Schedule updated successfully" });
+  } catch (err) {
+    console.error("Error updating schedule:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/alradycreate", protectedRoute, async (req, res) => {
+  try {
+    const foundUser = await User.findOne({ email: req.user }).select("_id");
+    if (!foundUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const servicedetails = await ServiceDetails.findOne({
+      uploadedBy: foundUser._id,
+    });
+
+    if (servicedetails) {
+      return res.status(200).json({ alreadyCreated: true });
+    } else {
+      return res.status(200).json({ alreadyCreated: false });
+    }
+  } catch (err) {
+    console.error("Error checking existing schedule:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/alradyschedule", protectedRoute, async (req, res) => {
+  try {
+    const foundUser = await User.findOne({ email: req.user }).select("_id");
+    if (!foundUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const schedule = await Schedule.findOne({
+      uploadedBy: foundUser._id,
+    });
+
+    if (schedule) {
+      return res.status(200).json({ isAlradySchedule: true });
+    } else {
+      return res.status(200).json({ isAlradySchedule: false });
+    }
+  } catch (err) {
+    console.error("Error checking existing schedule:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 

@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Trash2, Pencil } from "lucide-react";
 import useScheduleStore from "../store/useScheduleStore";
+import useAdminStore from "../store/useAdminStore"; // import to access serviceAdminData
 
 const daysOfWeek = [
   "Monday",
@@ -46,7 +47,7 @@ const to24HourFormat = (time12) => {
 const TimeScheduleForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { authorName, authorEmail } = location.state || {};
+  const { blogId, authorName, authorEmail } = location.state || {};
 
   const [selectedDay, setSelectedDay] = useState("");
   const [fromTime, setFromTime] = useState("");
@@ -63,13 +64,47 @@ const TimeScheduleForm = () => {
     resetSchedule,
     removeAvailabilitySlot,
     updateAvailabilitySlot,
+    setAvailability,
+    isalradyschedule,
+    isAlradySchedule,
   } = useScheduleStore();
 
+  const { serviceAdminData, fetchServiceAdminData } = useAdminStore();
   useEffect(() => {
-    if (authorName && authorEmail) {
+    (async function () {
+      await fetchServiceAdminData();
+      await isalradyschedule();
+    })();
+  }, [blogId]);
+
+  useEffect(() => {
+    const loadExistingSchedule = async () => {
+      console.log(serviceAdminData);
+      await fetchServiceAdminData();
+      const data = serviceAdminData[0];
+      console.log(serviceAdminData[0], "\n", data);
+      if (data) {
+        setServiceCharge(data.schedules[0]?.serviceCharge || 0);
+        setAvailability(data.schedules[0]?.availability || []);
+        setAuthorInfo({
+          name: data.author?.name || "",
+          email: data.author?.email || "",
+        });
+      }
+    };
+
+    if (blogId || isAlradySchedule) {
+      loadExistingSchedule();
+    } else if (authorName && authorEmail) {
       setAuthorInfo({ name: authorName, email: authorEmail });
     }
-  }, [authorName, authorEmail, setAuthorInfo]);
+  }, [
+    blogId,
+    authorName,
+    authorEmail,
+    fetchServiceAdminData,
+    isAlradySchedule,
+  ]);
 
   const handleAddSlot = () => {
     if (!selectedDay || !fromTime || !toTime) {
@@ -119,7 +154,7 @@ const TimeScheduleForm = () => {
     }
 
     try {
-      await submitSchedule();
+      await submitSchedule(blogId); // blogId can be passed to update existing schedule
       toast.success("✅ Schedule saved successfully!");
       resetSchedule();
       navigate("/admin");
@@ -132,7 +167,7 @@ const TimeScheduleForm = () => {
   return (
     <div className="max-w-xl mx-auto mt-10 px-4">
       <h2 className="text-3xl font-bold text-[#388087] mb-6">
-        ⏰ Set Your Weekly Availability
+        ⏰ {blogId ? "Edit" : "Set"} Your Weekly Availability
       </h2>
       <Divider className="mb-6" />
 

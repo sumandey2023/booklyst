@@ -218,9 +218,11 @@ const ServiceAdmin = () => {
               boxShadow: "0 8px 20px rgba(106,27,154,0.8)",
             },
           }}
-          onClick={() => {
-            console.log("Edit Schedule Clicked");
-          }}
+          onClick={() =>
+            navigate("/accountsetup/form/schedule", {
+              state: { blogId: data._id },
+            })
+          }
         >
           Edit Schedule
         </Button>
@@ -236,8 +238,6 @@ const ServiceAdmin = () => {
         width: "100%",
       }}
     >
-      {/* Hero Banner */}
-
       <Grid container justifyContent="center">
         <Box
           sx={{
@@ -251,7 +251,6 @@ const ServiceAdmin = () => {
           <Card
             sx={{
               borderRadius: 5,
-
               p: { xs: 4, md: 6 },
               bgcolor: "#e8eaf6",
               boxShadow: "0 12px 24px rgba(63,81,181,0.15)",

@@ -35,7 +35,7 @@ import useUserFromStore from "../store/useUserFromStore.js";
 import useAdminStore from "../store/useAdminStore.js";
 import { toast } from "react-toastify";
 import { useUser } from "@clerk/clerk-react";
-
+import useAuthStore from "../store/useAuthStore.js";
 const primaryColor = "#388087";
 const lightPrimary = "#5ca8b2";
 
@@ -169,12 +169,23 @@ const SetupForm = () => {
     setPreviews,
   } = useUserFromStore();
 
-  const { serviceAdminData, sendForUPdateBLogs } = useAdminStore();
+  const { serviceAdminData, fetchServiceAdminData } = useAdminStore();
+  const { isalradycreate, isAlradyCreate } = useAuthStore();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { user } = useUser();
+  useEffect(() => {
+    (async function () {
+      await fetchServiceAdminData();
+      await isalradycreate();
+    })();
+  }, [blogId]);
 
   useEffect(() => {
+    // If we're still waiting for data, do nothing yet
+    if (!serviceAdminData || (isAlradyCreate && !serviceAdminData.length))
+      return;
+
     if (restoredContent?.length) {
       resetForm();
       setForm({ type: passedType });
@@ -183,8 +194,10 @@ const SetupForm = () => {
         const id = block.id || crypto.randomUUID();
         addData(block.type, id, block.value || "");
       });
-    } else if (blogId) {
-      const blogData = serviceAdminData?.find((item) => item._id === blogId);
+    } else if (blogId || isAlradyCreate) {
+      const blogData = serviceAdminData.find(
+        (item) => item._id === blogId || isAlradyCreate
+      );
       if (blogData?.content?.length) {
         resetForm();
         setForm({ type: blogData.ServiceType });
@@ -197,7 +210,7 @@ const SetupForm = () => {
       resetForm();
       setForm({ type: passedType });
     }
-  }, [blogId, location.key, restoredContent, serviceAdminData]);
+  }, [blogId, location.key, restoredContent, serviceAdminData, isAlradyCreate]);
 
   const handleSelectChange = (e) => {
     const type = e.target.value;

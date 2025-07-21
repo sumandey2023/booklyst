@@ -4,6 +4,7 @@ import axios from "axios";
 import { axiosInstanace } from "../lib.js/axios";
 const useAuthStore = create((set, get) => ({
   Auth: null,
+  isAlradyCreate: false,
   clerk_auth: async (payload) => {
     console.log("brfore call", get().Auth);
     let output = await axiosInstanace.post("/Auth/clerk-auth", { payload });
@@ -27,6 +28,16 @@ const useAuthStore = create((set, get) => ({
       );
 
       return null;
+    }
+  },
+
+  isalradycreate: async () => {
+    try {
+      const res = await axiosInstanace.get(`/auth/alradycreate`);
+      set({ isAlradyCreate: res.data.alreadyCreated });
+    } catch (error) {
+      console.error("❌ createUserSetup error:", error);
+      throw error;
     }
   },
 }));
