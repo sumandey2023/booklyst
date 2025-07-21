@@ -24,7 +24,7 @@ const AccountSetup = () => {
     };
 
     // ✅ This stores selected type and service in navigation state
-    navigate("/AccountSetup/form", { state: data });
+    navigate("/accountSetup/form", { state: data });
   };
 
   return (
