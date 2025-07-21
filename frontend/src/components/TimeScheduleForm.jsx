@@ -9,12 +9,14 @@ import {
   IconButton,
   Divider,
   Typography,
+  CircularProgress,
+  Box,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Trash2, Pencil } from "lucide-react";
 import useScheduleStore from "../store/useScheduleStore";
-import useAdminStore from "../store/useAdminStore"; // import to access serviceAdminData
+import useAdminStore from "../store/useAdminStore";
 
 const daysOfWeek = [
   "Monday",
@@ -53,6 +55,7 @@ const TimeScheduleForm = () => {
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
   const [editIndex, setEditIndex] = useState(null);
+  const [loading, setLoading] = useState(true); // 🔄 Loader state
 
   const {
     availability,
@@ -70,19 +73,24 @@ const TimeScheduleForm = () => {
   } = useScheduleStore();
 
   const { serviceAdminData, fetchServiceAdminData } = useAdminStore();
+
+  // 🔃 Initial mount: fetch and check schedule
   useEffect(() => {
-    (async function () {
+    (async () => {
+      setLoading(true); // start loading
       await fetchServiceAdminData();
       await isalradyschedule();
+      setLoading(false); // stop after check
     })();
   }, [blogId]);
 
+  // 🧠 Load existing data if editing
   useEffect(() => {
     const loadExistingSchedule = async () => {
-      console.log(serviceAdminData);
+      setLoading(true);
       await fetchServiceAdminData();
       const data = serviceAdminData[0];
-      console.log(serviceAdminData[0], "\n", data);
+
       if (data) {
         setServiceCharge(data.schedules[0]?.serviceCharge || 0);
         setAvailability(data.schedules[0]?.availability || []);
@@ -91,12 +99,17 @@ const TimeScheduleForm = () => {
           email: data.author?.email || "",
         });
       }
+
+      setLoading(false); // ✅ data fully loaded, stop spinner
     };
 
     if (blogId || isAlradySchedule) {
       loadExistingSchedule();
-    } else if (authorName && authorEmail) {
-      setAuthorInfo({ name: authorName, email: authorEmail });
+    } else {
+      if (authorName && authorEmail) {
+        setAuthorInfo({ name: authorName, email: authorEmail });
+      }
+      setLoading(false); // ✅ for non-edit case, stop loading
     }
   }, [
     blogId,
@@ -115,11 +128,7 @@ const TimeScheduleForm = () => {
     const formattedFrom = to12HourFormat(fromTime);
     const formattedTo = to12HourFormat(toTime);
 
-    const slot = {
-      day: selectedDay,
-      from: formattedFrom,
-      to: formattedTo,
-    };
+    const slot = { day: selectedDay, from: formattedFrom, to: formattedTo };
 
     if (editIndex !== null) {
       updateAvailabilitySlot(editIndex, slot);
@@ -154,7 +163,7 @@ const TimeScheduleForm = () => {
     }
 
     try {
-      await submitSchedule(blogId); // blogId can be passed to update existing schedule
+      await submitSchedule(blogId);
       toast.success("✅ Schedule saved successfully!");
       resetSchedule();
       navigate("/admin");
@@ -163,6 +172,15 @@ const TimeScheduleForm = () => {
       toast.error("❌ Failed to save schedule.");
     }
   };
+
+  // ⏳ Show loading spinner while fetching data
+  if (loading) {
+    return (
+      <Box className="flex justify-center items-center h-screen">
+        <CircularProgress size={60} color="primary" />
+      </Box>
+    );
+  }
 
   return (
     <div className="max-w-xl mx-auto mt-10 px-4">
