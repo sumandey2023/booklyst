@@ -140,8 +140,13 @@ router.post("/clerk-auth", async (req, res) => {
       await user.save();
     } else {
       console.log("hi2");
-      user = await new User({ clerkId, name, email }).save();
-      console.log("hi3");
+      const user = new User();
+      user.clerkId = clerkId;
+      user.name = name;
+      user.email = email;
+      await user.save();
+
+      console.log(user);
       createdNew = true;
     }
 

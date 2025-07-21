@@ -21,7 +21,7 @@ const Auth = () => {
   const [open, setOpen] = useState(false);
   const { user } = useUser();
   const { openSignIn } = useClerk();
-  const { clerk_auth,SignOut } = useAuthStore();
+  const { clerk_auth, SignOut } = useAuthStore();
 
   // 🔥 Auto-open Clerk sign-in modal if user is not logged in
   useEffect(() => {
@@ -32,6 +32,7 @@ const Auth = () => {
 
   // ✅ Function called after login
   const afterLogin = () => {
+    console.log("hi");
     if (!user) return;
 
     const payload = {
@@ -39,7 +40,7 @@ const Auth = () => {
       email: user.primaryEmailAddress?.emailAddress,
       clerkId: user.id,
     };
-
+    console.log("hi");
     clerk_auth(payload); // Send user data to store function
   };
 
