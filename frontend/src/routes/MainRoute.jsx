@@ -8,6 +8,7 @@ import TimeScheduleForm from "../components/TimeScheduleForm";
 import Home from "../pages/Home";
 import Service from "../pages/Service";
 import ServiceAdmin from "../pages/admin/serviceadmin";
+import BookService from "../pages/BookService";
 
 const MainRoute = () => {
   return (
@@ -19,6 +20,8 @@ const MainRoute = () => {
       <Route path="/accountsetup/form/liveview" element={<LiveView />} />
       <Route path="/service" element={<Service />} />
       <Route path="/serviceadmin" element={<ServiceAdmin />} />
+
+      <Route path="/bookservice" element={<BookService />} />
 
       <Route
         path="/accountsetup/form/schedule"
