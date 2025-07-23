@@ -9,6 +9,8 @@ import Home from "../pages/Home";
 import Service from "../pages/Service";
 import ServiceAdmin from "../pages/admin/serviceadmin";
 import BookService from "../pages/BookService";
+import ProfilePage from "../pages/ProfilePage";
+import RoleLogin from "../components/RoleLogin";
 
 const MainRoute = () => {
   return (
@@ -22,6 +24,8 @@ const MainRoute = () => {
       <Route path="/serviceadmin" element={<ServiceAdmin />} />
 
       <Route path="/bookservice" element={<BookService />} />
+      {/* <Route path="/profile" element={<ProfilePage />} /> */}
+      <Route path="/rolelogin" element={<RoleLogin />} />
 
       <Route
         path="/accountsetup/form/schedule"

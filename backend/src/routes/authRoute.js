@@ -127,6 +127,7 @@ router.post("/clerk-auth", async (req, res) => {
     const { clerkId, name, email } = req.body.payload;
 
     console.log(clerkId, name, email);
+
     if (!clerkId || !name || !email) {
       return res.status(400).json({ message: "Missing required fields" });
     }

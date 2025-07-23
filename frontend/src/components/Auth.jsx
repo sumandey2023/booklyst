@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import useAuthStore from "../store/useAuthStore";
+import ProfilePage from "../pages/ProfilePage";
 
 const Auth = () => {
   const [open, setOpen] = useState(false);
@@ -26,7 +27,7 @@ const Auth = () => {
   // 🔥 Auto-open Clerk sign-in modal if user is not logged in
   useEffect(() => {
     if (!user) {
-      openSignIn({ redirectUrl: "/rolelogin" });
+      openSignIn({ redirectUrl: "/auth" });
     }
   }, [user, openSignIn]);
 
@@ -80,10 +81,10 @@ const Auth = () => {
         </Dialog>
       </SignedOut>
 
-      <SignedIn>
+      {/* <SignedIn>
         <UserButton />
-      </SignedIn>
-
+      </SignedIn> */}
+      <ProfilePage />
       <ToastContainer position="top-center" autoClose={3000} theme="colored" />
     </>
   );
