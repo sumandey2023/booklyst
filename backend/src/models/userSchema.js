@@ -10,6 +10,11 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  phNo: [
+    {
+      type: Number,
+    },
+  ],
   clerkId: {
     type: String,
     unique: true,

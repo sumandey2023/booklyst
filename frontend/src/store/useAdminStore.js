@@ -14,6 +14,13 @@ const useAdminStore = create((set) => ({
       console.error("Error fetching admin service data:", error);
     }
   },
+
+  updatePhoneNumbers: async (updated) => {
+    // console.log(updated);
+    const res = await axiosInstanace.put("/admin/updateNumber", {
+      updated,
+    });
+  },
 }));
 
 export default useAdminStore;

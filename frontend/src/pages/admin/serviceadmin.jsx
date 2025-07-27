@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
   Grid,
   Card,
-  CardContent,
   Divider,
   Table,
   TableHead,
@@ -14,18 +13,36 @@ import {
   Paper,
   Chip,
   Button,
+  IconButton,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useAdminStore from "../../store/useAdminStore";
-import { AccessTime, CalendarToday, Edit } from "@mui/icons-material";
+import {
+  AccessTime,
+  CalendarToday,
+  Edit,
+  Delete,
+  Add,
+} from "@mui/icons-material";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const ServiceAdmin = () => {
-  const { fetchServiceAdminData, serviceAdminData } = useAdminStore();
+  const { fetchServiceAdminData, serviceAdminData, updatePhoneNumbers } =
+    useAdminStore();
   const navigate = useNavigate();
+  const [phoneNumbers, setPhoneNumbers] = useState([]);
+  const [newPhone, setNewPhone] = useState("");
 
   useEffect(() => {
     fetchServiceAdminData();
-  }, [fetchServiceAdminData]);
+  }, [fetchServiceAdminData, updatePhoneNumbers]);
+
+  useEffect(() => {
+    if (serviceAdminData?.[0]?.phNo) {
+      setPhoneNumbers(serviceAdminData[0].phNo);
+    }
+  }, [serviceAdminData]);
 
   if (!serviceAdminData || serviceAdminData.length === 0) {
     return (
@@ -46,6 +63,93 @@ const ServiceAdmin = () => {
   }
 
   const data = serviceAdminData[0];
+
+  const handleAddPhone = async () => {
+    try {
+      const trimmed = newPhone.trim();
+      if (!trimmed || phoneNumbers.includes(trimmed)) return;
+
+      const updated = [...phoneNumbers, trimmed];
+      setPhoneNumbers(updated);
+      await updatePhoneNumbers(updated);
+
+      // await fetchServiceAdminData(); // ✅ Refresh phone list from backend
+      setNewPhone("");
+    } catch (err) {
+      console.error("Error adding phone number:", err);
+      alert(
+        "❌ Failed to add phone number. Please check the format or try again."
+      );
+    }
+  };
+
+  const handleDeletePhone = async (phone) => {
+    try {
+      const updated = phoneNumbers.filter((p) => p !== phone);
+      setPhoneNumbers(updated);
+      await updatePhoneNumbers(updated);
+
+      await fetchServiceAdminData(); // ✅ Refresh phone list from backend
+    } catch (err) {
+      console.error("Error deleting phone number:", err);
+      alert("❌ Failed to delete phone number.");
+    }
+  };
+
+  const renderPhoneSection = () => (
+    <Card
+      sx={{
+        p: 3,
+        mb: 5,
+        borderRadius: 4,
+        bgcolor: "#e8eaf6",
+        boxShadow: "0 6px 12px rgba(63,81,181,0.15)",
+      }}
+    >
+      <Typography variant="h6" color="#3f51b5" fontWeight="700" gutterBottom>
+        Contact Phone Numbers
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+      {phoneNumbers.length === 0 ? (
+        <Typography color="text.secondary">
+          No phone numbers available. Add one below.
+        </Typography>
+      ) : (
+        phoneNumbers.map((phone, idx) => (
+          <Box key={idx} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+            <Typography sx={{ flexGrow: 1 }}>{phone}</Typography>
+            <IconButton onClick={() => handleDeletePhone(phone)} color="error">
+              <Delete />
+            </IconButton>
+          </Box>
+        ))
+      )}
+      <Box sx={{ display: "flex", mt: 2, gap: 2, flexWrap: "wrap" }}>
+        <PhoneInput
+          country={"in"}
+          value={newPhone}
+          onChange={(phone) => setNewPhone(phone)}
+          inputStyle={{
+            height: 40,
+            width: 250,
+          }}
+          inputProps={{
+            name: "phone",
+            required: true,
+            autoFocus: false,
+          }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          onClick={handleAddPhone}
+        >
+          Add
+        </Button>
+      </Box>
+    </Card>
+  );
 
   const renderContent = (content) =>
     content.map((block) => {
@@ -91,12 +195,7 @@ const ServiceAdmin = () => {
           return (
             <Box
               key={block._id}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                mt: 3,
-                mb: 3,
-              }}
+              sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 3 }}
             >
               <Box
                 component="img"
@@ -113,7 +212,6 @@ const ServiceAdmin = () => {
               />
             </Box>
           );
-
         default:
           return null;
       }
@@ -162,11 +260,7 @@ const ServiceAdmin = () => {
             }}
           >
             <TableHead>
-              <TableRow
-                sx={{
-                  bgcolor: "#673ab7",
-                }}
-              >
+              <TableRow sx={{ bgcolor: "#673ab7" }}>
                 <TableCell
                   sx={{ color: "white", fontWeight: "700", fontSize: 16 }}
                 >
@@ -231,13 +325,7 @@ const ServiceAdmin = () => {
   );
 
   return (
-    <Box
-      sx={{
-        bgcolor: "#ede7f6",
-        minHeight: "100vh",
-        width: "100%",
-      }}
-    >
+    <Box sx={{ bgcolor: "#ede7f6", minHeight: "100vh", width: "100%" }}>
       <Grid container justifyContent="center">
         <Box
           sx={{
@@ -269,16 +357,8 @@ const ServiceAdmin = () => {
                 {data.ServiceType}
               </Box>
             </Typography>
-
             {renderContent(data.content)}
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                mt: 5,
-              }}
-            >
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 5 }}>
               <Button
                 variant="contained"
                 color="primary"
@@ -307,6 +387,7 @@ const ServiceAdmin = () => {
             </Box>
           </Card>
 
+          {renderPhoneSection()}
           {renderSchedule(data.schedules)}
         </Box>
       </Grid>

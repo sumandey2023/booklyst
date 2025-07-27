@@ -339,7 +339,7 @@ const SetupForm = () => {
 
         <Box mt={3} textAlign="right">
           <FormControl sx={{ minWidth: 200 }}>
-            <InputLabel>Add Block</InputLabel>
+            <InputLabel>Add</InputLabel>
             <Select
               value={selectedBlock}
               onChange={handleSelectChange}

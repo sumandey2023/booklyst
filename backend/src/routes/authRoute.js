@@ -10,7 +10,6 @@ const Schedule = require("../models/usescheduleSchema");
 const User = require("../models/userSchema");
 const jwt = require("jsonwebtoken"); // missing import
 const protectedRoute = require("../middleware/protectedRoute");
-// You can remove protectedRoute if you want this route public
 const emailJwtSign = (email) => {
   const payload = { email };
   const secret = process.env.JWT_SECRET || "shhhhh";
