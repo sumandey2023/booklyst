@@ -1,4 +1,5 @@
 // ✅ SetupForm.jsx - Full Updated Code with blogId and content prefill
+// ✅ Includes loading animation while editing
 
 import React, { useEffect, useState } from "react";
 import {
@@ -36,6 +37,7 @@ import useAdminStore from "../store/useAdminStore.js";
 import { toast } from "react-toastify";
 import { useUser } from "@clerk/clerk-react";
 import useAuthStore from "../store/useAuthStore.js";
+
 const primaryColor = "#388087";
 const lightPrimary = "#5ca8b2";
 
@@ -174,42 +176,52 @@ const SetupForm = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { user } = useUser();
+
   useEffect(() => {
     (async function () {
+      setFetching(true);
       await fetchServiceAdminData();
       await isalradycreate();
+      setFetching(false);
     })();
   }, [blogId]);
 
   useEffect(() => {
-    // If we're still waiting for data, do nothing yet
-    if (!serviceAdminData || (isAlradyCreate && !serviceAdminData.length))
-      return;
+    (async function () {
+      setFetching(true);
 
-    if (restoredContent?.length) {
-      resetForm();
-      setForm({ type: passedType });
-      setPreviews(restoredPreviews || {});
-      restoredContent.forEach((block) => {
-        const id = block.id || crypto.randomUUID();
-        addData(block.type, id, block.value || "");
-      });
-    } else if (blogId || isAlradyCreate) {
-      const blogData = serviceAdminData.find(
-        (item) => item._id === blogId || isAlradyCreate
-      );
-      if (blogData?.content?.length) {
+      if (!serviceAdminData || (isAlradyCreate && !serviceAdminData.length)) {
+        setFetching(false);
+        return;
+      }
+
+      if (restoredContent?.length) {
         resetForm();
-        setForm({ type: blogData.ServiceType });
-        blogData.content.forEach((block) => {
+        setForm({ type: passedType });
+        setPreviews(restoredPreviews || {});
+        restoredContent.forEach((block) => {
           const id = block.id || crypto.randomUUID();
           addData(block.type, id, block.value || "");
         });
+      } else if (blogId || isAlradyCreate) {
+        const blogData = serviceAdminData.find(
+          (item) => item._id === blogId || isAlradyCreate
+        );
+        if (blogData?.content?.length) {
+          resetForm();
+          setForm({ type: blogData.ServiceType });
+          blogData.content.forEach((block) => {
+            const id = block.id || crypto.randomUUID();
+            addData(block.type, id, block.value || "");
+          });
+        }
+      } else {
+        resetForm();
+        setForm({ type: passedType });
       }
-    } else {
-      resetForm();
-      setForm({ type: passedType });
-    }
+
+      setFetching(false);
+    })();
   }, [blogId, location.key, restoredContent, serviceAdminData, isAlradyCreate]);
 
   const handleSelectChange = (e) => {
@@ -252,10 +264,8 @@ const SetupForm = () => {
     try {
       setLoading(true);
       if (blogId) {
-        console.log(formData);
         await createUserSetup(formData);
       } else {
-        console.log(formData);
         await createUserSetup(formData);
         navigate("/accountsetup/form/schedule", {
           state: {
@@ -270,7 +280,7 @@ const SetupForm = () => {
     } catch (err) {
       console.error("Submit error:", err);
       setLoading(false);
-      toast.error("\u274C Failed to submit blog. Please try again.");
+      toast.error("❌ Failed to submit blog. Please try again.");
     }
   };
 
