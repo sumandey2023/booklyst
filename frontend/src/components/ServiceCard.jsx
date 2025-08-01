@@ -4,13 +4,10 @@ import ServiceDetailModal from "./ServiceDetailModal";
 
 const ServiceCard = ({ service }) => {
   const { ServiceType, content, createdAt, likes, dislikes } = service;
-
   const [likeCount, setLikeCount] = useState(likes.length);
   const [dislikeCount, setDislikeCount] = useState(dislikes.length);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
-  console.log(service);
-
   const [openModal, setOpenModal] = useState(false);
 
   // Extract content types
@@ -20,7 +17,11 @@ const ServiceCard = ({ service }) => {
   const text = content.find((item) => item.type === "text")?.value || "";
   const imageUrl = content.find((item) => item.type === "image")?.value || "";
 
-  const handleLike = () => {
+  const dummyImg =
+    "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80";
+
+  const handleLike = (e) => {
+    e.stopPropagation();
     if (isDisliked) {
       setDislikeCount((prev) => prev - 1);
       setIsDisliked(false);
@@ -34,7 +35,8 @@ const ServiceCard = ({ service }) => {
     }
   };
 
-  const handleDislike = () => {
+  const handleDislike = (e) => {
+    e.stopPropagation();
     if (isLiked) {
       setLikeCount((prev) => prev - 1);
       setIsLiked(false);
@@ -48,60 +50,72 @@ const ServiceCard = ({ service }) => {
     }
   };
 
-  const dummyImg =
-    "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80";
-
   return (
     <>
       <div
-        className="group relative bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden max-w-sm w-full mx-auto border border-gray-100 cursor-pointer"
+        className="
+          group relative bg-white/50 backdrop-blur-2xl border border-blue-100/60
+          rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl
+          transition-all duration-400 max-w-sm w-full mx-auto cursor-pointer
+          hover:scale-[1.025] active:scale-95
+        "
         style={{ minWidth: "320px", maxWidth: "384px" }}
         onClick={() => setOpenModal(true)}
       >
-        {/* Image Section */}
-        <div
-          className="relative overflow-hidden w-full"
-          style={{ minWidth: "320px", maxWidth: "384px" }}
-        >
+        {/* Hero IMAGE w/ Glass Overlay */}
+        <div className="relative w-full h-56 overflow-hidden">
           <img
             src={imageUrl || dummyImg}
             alt="Service"
-            className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+            className="
+              w-full h-full object-cover transition-transform duration-500
+              group-hover:scale-110
+            "
           />
-          {/* Service Type Badge */}
-          <div className="absolute top-4 left-4">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg">
-              {ServiceType}
-            </span>
-          </div>
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+          {/* Glass gradient + Shine */}
+          <span
+            className="
+              absolute inset-0 bg-gradient-to-t from-black/40 via-blue-200/10 to-transparent
+              transition-all"
+          />
+          {/* Shine hover */}
+          <span className="absolute inset-0 pointer-events-none ">
+            <span className="block w-full h-full bg-gradient-to-r from-white/10 via-white/40 to-white/10 opacity-0 group-hover:opacity-80 blur-sm animate-pulse transition-all duration-300" />
+          </span>
+          {/* ServiceType Badge */}
+          <span
+            className="
+            absolute top-4 left-4 px-4 py-1.5 text-xs font-bold rounded-full
+            bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500
+            shadow-lg text-white tracking-wider
+           
+          "
+          >
+            {ServiceType}
+          </span>
         </div>
 
-        {/* Content Section */}
-        <div
-          className="p-6 w-full"
-          style={{ minWidth: "320px", maxWidth: "384px" }}
-        >
-          {/* Title and Subtitle */}
-          <div className="mb-4">
-            <h3 className="text-xl font-bold text-gray-900 mb-1 leading-tight">
+        {/* Article Section */}
+        <div className="p-6 w-full flex flex-col gap-2">
+          {/* Title and subtitle */}
+          <div>
+            <h3 className="text-2xl font-extrabold text-blue-900 mb-1 leading-snug tracking-tight">
               {title || ServiceType}
             </h3>
             {subtitle && (
-              <h4 className="text-sm font-medium text-blue-600 mb-2">
+              <h4 className="text-sm font-semibold text-indigo-500 mb-2">
                 {subtitle}
               </h4>
             )}
           </div>
 
-          {/* Description */}
-          <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
+          {/* Text content */}
+          <p className="text-gray-700 text-base/relaxed mb-2 line-clamp-3">
             {text}
           </p>
 
           {/* Date */}
-          <div className="text-xs text-gray-400 mb-4">
+          <div className="text-xs text-gray-400 mb-4 mt-2 select-none">
             {new Date(createdAt).toLocaleDateString("en-IN", {
               day: "numeric",
               month: "short",
@@ -109,32 +123,51 @@ const ServiceCard = ({ service }) => {
             })}
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          {/* Likes & dislikes */}
+          <div className="flex items-center justify-between pt-2 border-t border-blue-50/60 mt-auto gap-2">
             <button
               onClick={handleLike}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                isLiked
-                  ? "bg-green-50 text-green-600 border border-green-200"
-                  : "text-gray-500 hover:bg-green-50 hover:text-green-600 border border-gray-200"
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl shadow transition-all duration-150 border font-semibold text-sm focus:outline-none
+                ${
+                  isLiked
+                    ? "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200 scale-105"
+                    : "text-gray-500 hover:bg-green-50 hover:text-green-700 border-gray-200 hover:scale-105"
+                }
+                `}
               aria-label="Like"
+              tabIndex={0}
+              type="button"
             >
-              <HandThumbUpIcon className="w-4 h-4" />
-              <span className="text-sm font-semibold">{likeCount}</span>
+              <HandThumbUpIcon
+                className={`w-5 h-5 ${
+                  isLiked
+                    ? "text-green-600"
+                    : "text-gray-400 group-hover:text-green-700"
+                }`}
+              />
+              {likeCount}
             </button>
-
             <button
               onClick={handleDislike}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                isDisliked
-                  ? "bg-red-50 text-red-600 border border-red-200"
-                  : "text-gray-500 hover:bg-red-50 hover:text-red-600 border border-gray-200"
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl shadow transition-all duration-150 border font-semibold text-sm focus:outline-none
+                ${
+                  isDisliked
+                    ? "bg-gradient-to-r from-rose-100 to-red-50 text-red-600 border-red-200 scale-105"
+                    : "text-gray-500 hover:bg-red-50 hover:text-red-600 border-gray-200 hover:scale-105"
+                }
+                `}
               aria-label="Dislike"
+              tabIndex={0}
+              type="button"
             >
-              <HandThumbDownIcon className="w-4 h-4" />
-              <span className="text-sm font-semibold">{dislikeCount}</span>
+              <HandThumbDownIcon
+                className={`w-5 h-5 ${
+                  isDisliked
+                    ? "text-red-500"
+                    : "text-gray-400 group-hover:text-red-600"
+                }`}
+              />
+              {dislikeCount}
             </button>
           </div>
         </div>
