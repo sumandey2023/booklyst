@@ -11,6 +11,8 @@ import ServiceAdmin from "../pages/admin/serviceadmin";
 import BookService from "../pages/BookService";
 import ProfilePage from "../pages/ProfilePage";
 import RoleLogin from "../components/RoleLogin";
+import UserDashboard from "../pages/dashboard/UserDashboard";
+import BusinessDashboard from "../pages/dashboard/BusinessDashboard";
 
 const MainRoute = () => {
   return (
@@ -26,6 +28,10 @@ const MainRoute = () => {
       <Route path="/bookservice" element={<BookService />} />
       {/* <Route path="/profile" element={<ProfilePage />} /> */}
       <Route path="/rolelogin" element={<RoleLogin />} />
+
+      {/* Dashboards */}
+      <Route path="/dashboard" element={<UserDashboard />} />
+      <Route path="/dashboard/business" element={<BusinessDashboard />} />
 
       <Route
         path="/accountsetup/form/schedule"

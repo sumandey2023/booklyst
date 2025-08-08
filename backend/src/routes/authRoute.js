@@ -250,4 +250,26 @@ router.get("/alradyschedule", protectedRoute, async (req, res) => {
   }
 });
 
+// 🔐 Route: Send cookie to frontend after authentication
+router.get("/send-cookie", protectedRoute, async (req, res) => {
+  try {
+    // Get the token from the signed cookie
+    const token = req.signedCookies.token;
+    console.log("token from cookie:", token);
+
+    // Also send token in response for immediate use
+    if (token) {
+      return res.status(200).json({
+        message: "Cookie sent successfully",
+        token: token,
+      });
+    } else {
+      return res.status(401).json({ message: "Unauthorized", token: null });
+    }
+  } catch (err) {
+    console.error("Error in /send-cookie:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

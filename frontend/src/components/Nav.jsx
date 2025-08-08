@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
+import useThemeStore from "../store/useThemeStore";
 
 const Nav = () => {
   const { user } = useUser();
@@ -42,6 +43,14 @@ const Nav = () => {
     };
   }, [menuOpen]);
 
+  const { mode, toggleMode } = useThemeStore();
+
+  useEffect(() => {
+    // initialize class on mount
+    if (mode === "dark") document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+  }, [mode]);
+
   const navLinks = [
     { to: "/", label: "Home", end: true, icon: "🏠" },
     { to: "/about", label: "About", icon: "📖" },
@@ -66,15 +75,11 @@ const Nav = () => {
       <nav
         className={`
           sticky top-0 z-50 w-full transition-all duration-500 ease-out select-none
-          ${
-            scrolled
-              ? "bg-white/80 backdrop-blur-2xl "
-              : "bg-white/95 backdrop-blur-xl "
-          }
+          ${scrolled ? "bg-white/80 dark:bg-slate-900/80" : "bg-white/95 dark:bg-slate-900/90"} backdrop-blur-xl border-b border-transparent dark:border-slate-800
         `}
       >
         {/* Animated background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/30 via-purple-50/20 to-pink-50/30 opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/30 via-purple-50/20 to-pink-50/30 dark:from-slate-900/10 dark:via-slate-900/20 dark:to-slate-900/10 opacity-60" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -137,8 +142,18 @@ const Nav = () => {
               ))}
             </div>
 
+            {/* Theme toggle */}
+            <button
+              onClick={toggleMode}
+              className="hidden md:inline-flex mr-3 p-2 rounded-xl border border-indigo-100 dark:border-slate-700 text-indigo-700 dark:text-indigo-200 hover:bg-indigo-50 dark:hover:bg-slate-800 transition"
+              aria-label="Toggle dark mode"
+              title="Toggle dark mode"
+            >
+              {mode === "dark" ? "🌙" : "☀️"}
+            </button>
+
             {/* Enhanced Desktop User Section */}
-            <div className="hidden md:flex items-center ml-6 gap-3">
+            <div className="hidden md:flex items-center ml-2 gap-3">
               {user ? (
                 <NavLink
                   to="/auth"

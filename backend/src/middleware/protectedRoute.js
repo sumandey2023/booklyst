@@ -2,20 +2,27 @@ const jwt = require("jsonwebtoken");
 
 const protectedRoute = (req, res, next) => {
   try {
-    const token = req.signedCookies?.token || req.cookies?.token;
-    console.log("Token:", token);
+    // Prefer Authorization header Bearer token; fallback to signed cookie
+    const authHeader = req.headers?.authorization || req.headers?.Authorization;
+    const bearerToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.substring(7)
+      : null;
+    const cookieToken = req.signedCookies?.token || req.cookies?.token;
+    const token = bearerToken || cookieToken;
 
     if (!token) {
       return res.status(400).json({ message: "Signin first" });
     }
 
-    const decoded = jwt.verify(token, "shhhhh");
+    const secret = process.env.JWT_SECRET || "shhhhh";
+    const decoded = jwt.verify(token, secret);
 
-    if (!decoded) {
+    if (!decoded || !decoded.email) {
       return res.status(401).json({ message: "User is not authenticated" });
     }
-    console.log(decoded.email);
+
     req.user = decoded.email;
+    req.cookie = token;
     next();
   } catch (err) {
     console.error("JWT error:", err.message);

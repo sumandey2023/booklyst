@@ -20,6 +20,10 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     sparse: true,
   },
+  accountType: {
+    type: String,
+    enum: ["userAccount", "businessAccount"],
+  },
 });
 
 const User = mongoose.model("User", UserSchema);

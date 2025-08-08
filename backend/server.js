@@ -4,6 +4,7 @@ const connectDB = require("./src/db/connectdb");
 const authRoutes = require("./src/routes/authRoute");
 const serviceRouter = require("./src/routes/serviceRouter");
 const adminRouter = require("./src/routes/adminRoute");
+const userRoutes = require("./src/routes/userRoutes");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
 const COOKIE_SECRET = process.env.COOKIE_SECRET || "your_cookie_secret";
@@ -26,6 +27,7 @@ app.use(
 );
 
 app.use(cookieParser(COOKIE_SECRET)); // ✅ This line is required for signed cookies
+app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/service", serviceRouter);
 app.use("/api/admin", adminRouter);
