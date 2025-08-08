@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 import axios from "axios";
 import ServiceCard from "../components/ServiceCard";
 import serviceStore from "../store/service";
+import MotionFade from "../components/motion/MotionFade";
 
 const Service = () => {
   const { fetchData, serviceData } = serviceStore();
@@ -142,21 +143,21 @@ const Service = () => {
   );
 
   return (
-    <div className="min-h-screen z-10 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex flex-col items-center px-4 py-8 relative overflow-hidden">
+    <div className="min-h-screen z-10 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col items-center px-4 py-8 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 dark:from-slate-800/20 dark:to-slate-700/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-purple-200/20 to-pink-200/20 dark:from-slate-800/10 dark:to-slate-700/10 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
       {/* Hero Section */}
-      <div className="relative z-10 max-w-4xl w-full text-center mb-12 animate-fade-in-up">
+      <MotionFade className="relative z-10 max-w-4xl w-full text-center mb-12">
         <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-blue-700 to-purple-700 mb-4 drop-shadow-sm">
+          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-blue-700 to-purple-700 dark:from-indigo-300 dark:via-blue-300 dark:to-purple-300 mb-4 drop-shadow-sm">
             Find Your Perfect Service
           </h1>
-          <p className="text-xl text-slate-600 mb-2 max-w-2xl mx-auto leading-relaxed">
-            <span className="font-semibold text-indigo-600">
+          <p className="text-xl text-slate-600 dark:text-slate-300 mb-2 max-w-2xl mx-auto leading-relaxed">
+            <span className="font-semibold text-indigo-600 dark:text-indigo-300">
               Fast, reliable, and at your fingertips.
             </span>
           </p>
@@ -165,10 +166,10 @@ const Service = () => {
         {/* Enhanced Search Bar */}
         <div className="relative max-w-2xl mx-auto mb-6 z-50">
           <div
-            className={`relative bg-white/90 backdrop-blur-xl rounded-2xl border-2 transition-all duration-300 shadow-lg ${
+            className={`relative bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-2xl border-2 transition-all duration-300 shadow-lg ${
               isSearchFocused
                 ? "border-indigo-400 shadow-xl shadow-indigo-500/20"
-                : "border-slate-200 hover:border-indigo-300"
+                : "border-slate-200 dark:border-slate-700 hover:border-indigo-300"
             }`}
           >
             {/* Search Input */}
@@ -183,12 +184,12 @@ const Service = () => {
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
                 placeholder="Search for services, categories, or keywords..."
-                className="flex-1 h-14 bg-transparent border-none outline-none text-slate-700 placeholder-slate-400 text-lg font-medium pr-4"
+                className="flex-1 h-14 bg-transparent border-none outline-none text-slate-700 dark:text-slate-200 placeholder-slate-400 text-lg font-medium pr-4"
               />
               {search && (
                 <button
                   onClick={clearSearch}
-                  className="flex items-center justify-center w-10 h-10 mr-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-200"
+                  className="flex items-center justify-center w-10 h-10 mr-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all duration-200"
                   title="Clear search"
                 >
                   <ClearIcon />
@@ -198,10 +199,10 @@ const Service = () => {
 
             {/* Search Enhancement Bar */}
             {isSearchFocused && (
-              <div className="absolute top-full left-0 right-0 mt-2 p-4 bg-white/98 backdrop-blur-xl rounded-2xl border border-slate-200 shadow-2xl z-[9999] animate-fade-in">
+              <div className="absolute top-full left-0 right-0 mt-2 p-4 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl z-[9999] animate-fade-in">
                 <div className="flex items-center gap-2 mb-3">
                   <FilterIcon />
-                  <span className="text-sm font-semibold text-slate-700">
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Quick Filters
                   </span>
                 </div>
@@ -217,7 +218,7 @@ const Service = () => {
                     <button
                       key={filter}
                       onClick={() => setSearch(filter)}
-                      className="px-4 py-2 bg-gradient-to-r from-indigo-50 to-blue-50 hover:from-indigo-100 hover:to-blue-100 text-indigo-700 font-medium rounded-xl border border-indigo-200 hover:border-indigo-300 transition-all duration-200 text-sm"
+                      className="px-4 py-2 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-slate-800 dark:to-slate-800 hover:from-indigo-100 hover:to-blue-100 text-indigo-700 dark:text-indigo-300 font-medium rounded-xl border border-indigo-200 dark:border-slate-700 hover:border-indigo-300 transition-all duration-200 text-sm"
                     >
                       {filter}
                     </button>
@@ -230,7 +231,7 @@ const Service = () => {
           {/* Search Results Info */}
           {search && (
             <div className="mt-4 text-center animate-fade-in">
-              <p className="text-slate-600">
+              <p className="text-slate-600 dark:text-slate-300">
                 {displayedServices.length > 0 ? (
                   <>
                     Found{" "}
@@ -239,7 +240,7 @@ const Service = () => {
                     </span>{" "}
                     {displayedServices.length === 1 ? "service" : "services"}{" "}
                     for
-                    <span className="font-semibold text-slate-800">
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
                       {" "}
                       "{search}"
                     </span>
@@ -247,7 +248,7 @@ const Service = () => {
                 ) : (
                   <>
                     No services found for{" "}
-                    <span className="font-semibold text-slate-800">
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
                       "{search}"
                     </span>
                   </>
@@ -256,10 +257,10 @@ const Service = () => {
             </div>
           )}
         </div>
-      </div>
+      </MotionFade>
 
       {/* Service Cards Grid */}
-      <div className="relative w-full max-w-7xl">
+      <MotionFade className="relative w-full max-w-7xl" delay={0.05}>
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, index) => (
@@ -284,10 +285,10 @@ const Service = () => {
             <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
               <SearchIcon className="w-16 h-16 text-slate-400" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-700 mb-4">
+            <h3 className="text-2xl font-bold text-slate-700 dark:text-slate-200 mb-4">
               No Services Found
             </h3>
-            <p className="text-slate-500 mb-8 max-w-md mx-auto">
+            <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">
               We couldn't find any services matching your search. Try different
               keywords or browse all available services.
             </p>
@@ -329,15 +330,15 @@ const Service = () => {
                 />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-slate-700 mb-4">
+            <h3 className="text-2xl font-bold text-slate-700 dark:text-slate-200 mb-4">
               Loading Services...
             </h3>
-            <p className="text-slate-500">
+            <p className="text-slate-500 dark:text-slate-400">
               Please wait while we fetch the latest services for you.
             </p>
           </div>
         )}
-      </div>
+      </MotionFade>
 
       {/* Custom CSS for animations */}
       <style jsx="true">{`

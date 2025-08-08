@@ -3,20 +3,24 @@ import EcommerceComponent from "../components/EcommerceComponent";
 import ServiceComponent from "../components/ServiceComponet";
 import ResturantComponent from "../components/ResturantComponent";
 import ResortComponent from "../components/ResortComponent";
+import MotionFade from "../components/motion/MotionFade";
 
-// Banners for the carousel
+// Banners for the carousel (cleaner, bold captions)
 const banners = [
   {
-    img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1000&q=80",
-    text: "Big Summer Sale! Up to 50% off on select products.",
+    img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1400&q=80",
+    title: "Discover & Book",
+    subtitle: "Shops • Services • Restaurants • Resorts",
   },
   {
-    img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=80",
-    text: "Book Home Services Instantly – Trusted Professionals.",
+    img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80",
+    title: "Trusted Professionals",
+    subtitle: "Instant booking with transparent pricing",
   },
   {
-    img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80",
-    text: "Reserve Your Table at Top Restaurants.",
+    img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1400&q=80",
+    title: "Great Deals, Anytime",
+    subtitle: "Curated offers from top businesses",
   },
 ];
 
@@ -31,7 +35,7 @@ function Carousel() {
     return () => clearInterval(interval);
   }, []);
   return (
-    <div className="relative w-full h-56 md:h-72 rounded-3xl overflow-hidden shadow-xl bg-gradient-to-br from-white/60 to-blue-50 mb-12 select-none">
+    <div className="relative w-full h-64 md:h-80 rounded-3xl overflow-hidden shadow-xl bg-gradient-to-br from-white/60 to-blue-50 dark:from-slate-900/60 dark:to-slate-800/60 mb-12 select-none">
       {banners.map((banner, idx) => (
         <div
           key={idx}
@@ -42,18 +46,21 @@ function Carousel() {
           <img
             src={banner.img}
             alt="Banner"
-            className="w-full h-full object-cover scale-105 blur-[2px]"
+            className="w-full h-full object-cover scale-105"
           />
-          {/* Glass Overlay */}
-          <div className="absolute inset-0 bg-white/40 backdrop-blur-sm flex items-center justify-center px-6">
-            <span className="text-blue-950 text-xl md:text-3xl font-bold drop-shadow-lg text-center shadow-lg px-3 py-2 rounded-2xl bg-white/30">
-              {banner.text}
-            </span>
+          {/* Gradient overlay with centered captions */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col items-center justify-end pb-8 px-6">
+            <h3 className="text-white text-2xl md:text-4xl font-extrabold drop-shadow-lg text-center">
+              {banner.title}
+            </h3>
+            <p className="mt-2 text-white/90 text-sm md:text-base font-medium text-center">
+              {banner.subtitle}
+            </p>
           </div>
         </div>
       ))}
       {/* Dots */}
-      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
         {banners.map((_, idx) => (
           <button
             key={idx}
@@ -154,74 +161,73 @@ const featureData = [
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-200 flex flex-col scroll-smooth font-sans antialiased transition-all duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col scroll-smooth font-sans antialiased transition-all duration-300">
       {/* HERO SECTION */}
       <section className="relative w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-16 py-10 md:py-20 gap-10 md:gap-20 z-10">
         {/* Hero Left */}
-        <div className="flex-1 flex flex-col items-start gap-5 animate-fade-in-up">
-          <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-100 via-blue-300 to-teal-200 text-blue-700 font-semibold text-xs shadow mb-3 uppercase tracking-widest">
-            New & Improved
-          </span>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-1 text-slate-900 leading-tight drop-shadow-2xl">
-            Your{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600">
-              All-in-One
-            </span>{" "}
-            Platform
-          </h1>
-          <h2 className="text-xl md:text-2xl font-semibold text-blue-500 mb-3">
-            Shopping, Booking & More.
-          </h2>
-          <p className="text-base md:text-lg text-gray-700 mb-7 max-w-xl">
-            Discover, shop, and book everything you need — from products and
-            services to restaurants and resorts —
-            <span className="text-blue-500 font-medium">
-              {" "}
-              in one seamless place
-            </span>
-            .
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="#features"
-              className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-500 text-white text-lg shadow-lg hover:scale-105 hover:bg-blue-700 transition font-semibold"
-            >
-              Get Started
-            </a>
-            <a
-              href="#"
-              className="px-7 py-3 rounded-full border border-blue-300 text-blue-600 bg-white/50 hover:bg-blue-50 shadow hover:scale-105 transition text-lg font-medium"
-            >
-              Learn More
-            </a>
+        <MotionFade className="flex-1">
+          <div className="flex flex-col items-start gap-5">
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-1 text-slate-900 dark:text-slate-100 leading-tight drop-shadow-2xl">
+              Your{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600">
+                All-in-One
+              </span>{" "}
+              Platform
+            </h1>
+            <h2 className="text-xl md:text-2xl font-semibold text-blue-500 dark:text-indigo-300 mb-3">
+              Shopping, Booking & More.
+            </h2>
+            <p className="text-base md:text-lg text-gray-700 dark:text-slate-300 mb-7 max-w-xl">
+              Discover, shop, and book everything you need — from products and
+              services to restaurants and resorts —
+              <span className="text-blue-500 dark:text-indigo-300 font-medium">
+                {" "}
+                in one seamless place
+              </span>
+              .
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="#features"
+                className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-500 text-white text-lg shadow-lg hover:scale-105 hover:bg-blue-700 transition font-semibold"
+              >
+                Get Started
+              </a>
+              <a
+                href="#"
+                className="px-7 py-3 rounded-full border border-blue-300 text-blue-600 dark:text-indigo-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/40 hover:bg-blue-50 dark:hover:bg-slate-800 shadow hover:scale-105 transition text-lg font-medium"
+              >
+                Learn More
+              </a>
+            </div>
           </div>
-        </div>
+        </MotionFade>
         {/* Hero Right */}
-        <div className="flex-1 flex justify-center animate-fade-in">
+        <MotionFade className="flex-1" delay={0.1}>
           <div className="relative">
             <img
               src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80"
               alt="Platform Preview"
-              className="rounded-3xl shadow-2xl w-full max-w-md object-cover border-[4px] border-white/60"
+              className="rounded-3xl shadow-2xl w-full max-w-md object-cover border-[4px] border-white/60 dark:border-slate-800"
             />
             {/* Soft Glow */}
             <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-80 h-9 rounded-full bg-blue-400 blur-2xl opacity-25 -z-10" />
           </div>
-        </div>
+        </MotionFade>
       </section>
       {/* CAROUSEL */}
-      <section className="px-6 md:px-16 animate-fade-in-up">
+      <section className="px-6 md:px-16">
         <Carousel />
       </section>
       {/* FEATURES */}
       <section
         id="features"
-        className="px-4 md:px-16 py-14 bg-gradient-to-tr from-slate-50 via-white to-blue-50/60 rounded-3xl shadow-md mx-2 md:mx-10 mb-8"
+        className="px-4 md:px-16 py-14 bg-gradient-to-tr from-slate-50 via-white to-blue-50/60 dark:from-slate-900/40 dark:via-slate-900/20 dark:to-slate-900/40 rounded-3xl shadow-md mx-2 md:mx-10 mb-8"
       >
-        <h2 className="text-2xl md:text-4xl font-extrabold text-blue-800 text-center mb-2 animate-fade-in-up tracking-tight">
+        <h2 className="text-2xl md:text-4xl font-extrabold text-blue-800 dark:text-indigo-300 text-center mb-2 tracking-tight">
           Explore Our Features
         </h2>
-        <p className="text-center text-lg text-gray-500 mb-10 max-w-2xl mx-auto">
+        <p className="text-center text-lg text-gray-500 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
           Everything you need, just a tap away.{" "}
           <span className="font-semibold text-blue-700">
             Secure. Fast. Delightful.
@@ -233,9 +239,9 @@ const Home = () => {
               key={label}
               className={`
                 flex flex-col items-center text-center shadow-[0_2px_24px_0px_rgba(84,124,242,0.09)]
-                bg-gradient-to-br ${color} rounded-2xl p-6 md:p-7
-                border border-blue-200/30 hover:shadow-lg hover:-translate-y-2 hover:bg-white/80
-                transition-all duration-300 animate-fade-in-up
+                bg-gradient-to-br ${color} dark:from-slate-900/40 dark:via-slate-900/20 dark:to-slate-900/40 rounded-2xl p-6 md:p-7
+                border border-blue-200/30 dark:border-slate-800 hover:shadow-lg hover:-translate-y-2 hover:bg-white/80 dark:hover:bg-slate-900/50
+                transition-all duration-300
                 ${
                   idx === 1
                     ? "delay-75"
@@ -249,7 +255,7 @@ const Home = () => {
             >
               <div className="mb-3 drop-shadow-sm">{icon}</div>
               <div className="w-full min-h-[120px] flex flex-col grow">
-                <span className="font-bold text-lg text-blue-700 mb-2">
+                <span className="font-bold text-lg text-blue-700 dark:text-indigo-300 mb-2">
                   {label}
                 </span>
                 <div className="flex-1">
@@ -261,11 +267,11 @@ const Home = () => {
         </div>
       </section>
       {/* FOOTER */}
-      <footer className="mt-8 bg-white/70 backdrop-blur-lg border-t border-blue-100 py-10 px-6 md:px-16 rounded-t-3xl shadow-inner animate-fade-in-up">
+      <footer className="mt-8 bg-white/70 dark:bg-slate-900/60 backdrop-blur-lg border-t border-blue-100 dark:border-slate-800 py-10 px-6 md:px-16 rounded-t-3xl shadow-inner">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-blue-800 font-bold text-lg tracking-tight flex items-center gap-2">
+          <div className="text-blue-800 dark:text-indigo-300 font-bold text-lg tracking-tight flex items-center gap-2">
             <svg
-              className="w-7 h-7 text-blue-600"
+              className="w-7 h-7 text-blue-600 dark:text-indigo-400"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 32 32"
@@ -294,12 +300,12 @@ const Home = () => {
             </svg>
             <span>
               Booklyst{" "}
-              <span className="text-base font-medium text-blue-500">
+              <span className="text-base font-medium text-blue-500 dark:text-indigo-300">
                 &copy; {new Date().getFullYear()}
               </span>
             </span>
           </div>
-          <div className="flex flex-wrap gap-7 text-gray-600 font-medium items-center text-sm">
+          <div className="flex flex-wrap gap-7 text-gray-600 dark:text-slate-400 font-medium items-center text-sm">
             <a href="#" className="hover:text-blue-600 transition">
               About
             </a>

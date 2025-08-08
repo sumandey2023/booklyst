@@ -183,15 +183,18 @@ const TimeScheduleForm = () => {
   }
 
   return (
-    <div className="max-w-xl mx-auto mt-10 px-4">
-      <h2 className="text-3xl font-bold text-[#388087] mb-6">
-        ⏰ {blogId ? "Edit" : "Set"} Your Weekly Availability
-      </h2>
-      <Divider className="mb-6" />
+    <Box sx={{ maxWidth: 720, mx: "auto", mt: 6, px: 2 }}>
+      <Typography variant="h4" fontWeight={800} sx={{ color: "primary.main", letterSpacing: -0.5, mb: 1 }}>
+        {blogId ? "Edit" : "Set"} Your Weekly Availability
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Add your working days, preferred hours, and service charge.
+      </Typography>
+      <Divider sx={{ mb: 3 }} />
 
-      <div className="flex flex-col gap-4">
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
         <TextField
-          label="Service Charge (in ₹)"
+          label="Service Charge (₹)"
           type="number"
           value={serviceCharge}
           onChange={(e) => setServiceCharge(e.target.value)}
@@ -199,11 +202,7 @@ const TimeScheduleForm = () => {
 
         <FormControl fullWidth>
           <InputLabel>Select Day</InputLabel>
-          <Select
-            value={selectedDay}
-            label="Select Day"
-            onChange={(e) => setSelectedDay(e.target.value)}
-          >
+          <Select value={selectedDay} label="Select Day" onChange={(e) => setSelectedDay(e.target.value)}>
             {daysOfWeek.map((day) => (
               <MenuItem key={day} value={day}>
                 {day}
@@ -212,64 +211,48 @@ const TimeScheduleForm = () => {
           </Select>
         </FormControl>
 
-        <TextField
-          label="From Time"
-          type="time"
-          value={fromTime}
-          onChange={(e) => setFromTime(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          label="To Time"
-          type="time"
-          value={toTime}
-          onChange={(e) => setToTime(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-        />
+        <TextField label="From Time" type="time" value={fromTime} onChange={(e) => setFromTime(e.target.value)} InputLabelProps={{ shrink: true }} />
+        <TextField label="To Time" type="time" value={toTime} onChange={(e) => setToTime(e.target.value)} InputLabelProps={{ shrink: true }} />
+      </Box>
 
-        <Button
-          variant="outlined"
-          onClick={handleAddSlot}
-          className="!text-sm !py-2"
-        >
-          {editIndex !== null ? "✏️ Update Slot" : "➕ Add Slot"}
+      <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+        <Button variant="contained" onClick={handleAddSlot} sx={{ borderRadius: 2, textTransform: "none", fontWeight: 700 }}>
+          {editIndex !== null ? "Update Slot" : "Add Slot"}
         </Button>
-      </div>
+        {editIndex !== null && (
+          <Button variant="text" color="inherit" onClick={() => setEditIndex(null)} sx={{ textTransform: "none" }}>
+            Cancel Edit
+          </Button>
+        )}
+      </Box>
 
-      <div className="mt-8">
-        <Typography variant="h6" fontWeight={600}>
-          🗓️ Added Time Slots
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" fontWeight={700}>
+          Added Time Slots
         </Typography>
-        <div className="flex flex-col gap-2 mt-4">
+        <Box sx={{ mt: 2, display: "grid", gap: 1.5 }}>
           {availability.map((slot, i) => (
-            <div
-              key={i}
-              className="p-4 border border-gray-300 rounded-lg bg-gray-50 flex justify-between items-center"
-            >
+            <Box key={i} sx={{ p: 2, borderRadius: 2, bgcolor: "background.paper", border: "1px solid", borderColor: "divider", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2 }}>
               <span className="font-medium">
                 {slot.day}: {slot.from} - {slot.to}
               </span>
-              <div>
-                <IconButton onClick={() => handleEdit(slot, i)} color="primary">
+              <Box>
+                <IconButton onClick={() => handleEdit(slot, i)} color="primary" size="small">
                   <Pencil size={18} />
                 </IconButton>
-                <IconButton onClick={() => handleDelete(i)} color="error">
+                <IconButton onClick={() => handleDelete(i)} color="error" size="small">
                   <Trash2 size={18} />
                 </IconButton>
-              </div>
-            </div>
+              </Box>
+            </Box>
           ))}
-        </div>
-      </div>
+        </Box>
+      </Box>
 
-      <Button
-        variant="contained"
-        onClick={handleSubmit}
-        className="w-full !bg-[#388087] !text-white !mt-6 !font-semibold"
-      >
-        ✅ Save Schedule
+      <Button variant="contained" onClick={handleSubmit} sx={{ width: "100%", mt: 3, fontWeight: 800, borderRadius: 2 }}>
+        Save Schedule
       </Button>
-    </div>
+    </Box>
   );
 };
 

@@ -1,12 +1,15 @@
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useClerk } from "@clerk/clerk-react";
 import useThemeStore from "../store/useThemeStore";
+import useAuthStore from "../store/useAuthStore";
 
 const Nav = () => {
   const { user } = useUser();
+  const { signOut } = useClerk();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   // Handle scroll effect
   useEffect(() => {
@@ -44,6 +47,7 @@ const Nav = () => {
   }, [menuOpen]);
 
   const { mode, toggleMode } = useThemeStore();
+  const { SignOut: signOutBackend } = useAuthStore();
 
   useEffect(() => {
     // initialize class on mount
@@ -51,11 +55,41 @@ const Nav = () => {
     else document.documentElement.classList.remove("dark");
   }, [mode]);
 
+  // Close user menu on outside click / escape
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuOpen && !event.target.closest("[data-user-menu-root]") && !event.target.closest("[data-user-menu-button]")) {
+        setUserMenuOpen(false);
+      }
+    };
+    const handleEscape = (event) => {
+      if (event.key === "Escape") setUserMenuOpen(false);
+    };
+    if (userMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [userMenuOpen]);
+
+  const handleSignOut = async () => {
+    try {
+      await signOutBackend?.();
+    } catch {}
+    try {
+      await signOut();
+    } catch {}
+    setUserMenuOpen(false);
+  };
+
   const navLinks = [
-    { to: "/", label: "Home", end: true, icon: "🏠" },
-    { to: "/about", label: "About", icon: "📖" },
-    { to: "/gallery", label: "Gallery", icon: "🖼️" },
-    { to: "/products", label: "Products", icon: "🛍️" },
+    { to: "/", label: "Home", end: true },
+    { to: "/service", label: "Services" },
+    { to: "/rolelogin", label: "Get Started" },
+    { to: "/dashboard", label: "Dashboard" },
   ];
 
   return (
@@ -73,10 +107,13 @@ const Nav = () => {
       )}
 
       <nav
-        className={`
-          sticky top-0 z-50 w-full transition-all duration-500 ease-out select-none
-          ${scrolled ? "bg-white/80 dark:bg-slate-900/80" : "bg-white/95 dark:bg-slate-900/90"} backdrop-blur-xl border-b border-transparent dark:border-slate-800
-        `}
+        className={`sticky top-0 z-50 w-full transition-all duration-500 ease-out select-none
+          ${
+            scrolled
+              ? "bg-white/80 dark:bg-slate-900/80"
+              : "bg-white/95 dark:bg-slate-900/90"
+          }
+          backdrop-blur-xl border-b border-slate-100/60 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)]`}
       >
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/30 via-purple-50/20 to-pink-50/30 dark:from-slate-900/10 dark:via-slate-900/20 dark:to-slate-900/10 opacity-60" />
@@ -118,96 +155,87 @@ const Nav = () => {
                   to={link.to}
                   end={link.end}
                   className={({ isActive }) =>
-                    `relative px-6 py-3 rounded-2xl font-semibold text-base group
+                    `relative px-5 py-2.5 rounded-2xl font-semibold text-sm group tracking-wide
                     transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400
                     ${
                       isActive
-                        ? "text-white bg-gradient-to-r from-indigo-600 to-purple-600 shadow-xl shadow-indigo-500/25"
-                        : "text-indigo-700 hover:text-indigo-800 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50"
+                        ? "text-white bg-gradient-to-r from-indigo-600 to-purple-600 shadow-2xl shadow-indigo-500/30 ring-1 ring-indigo-300/40 dark:ring-indigo-500/30 scale-[1.02]"
+                        : "text-indigo-700 dark:text-indigo-200 hover:text-indigo-800 dark:hover:text-indigo-100 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 dark:hover:from-slate-800 dark:hover:to-slate-800"
                     }`
                   }
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="text-lg group-hover:scale-110 transition-transform duration-200">
-                      {link.icon}
-                    </span>
-                    {link.label}
-                  </span>
-                  {/* Hover effect underline */}
-                  <span className="absolute bottom-1 left-1/2 h-0.5 w-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-300 group-hover:w-3/4 group-hover:-translate-x-1/2" />
-                  {/* Ripple effect */}
+                  <span className="flex items-center gap-2">{link.label}</span>
+                  {/* Active/hover underline */}
+                  <span className={`absolute -bottom-1 left-1/2 h-0.5 rounded-full transition-all duration-300 -translate-x-1/2 ${
+                    // show underline when active; expand on hover for inactive
+                    window.location && window.location.pathname && window.location.pathname === link.to
+                      ? "w-3/4 bg-gradient-to-r from-indigo-500 to-purple-500"
+                      : "w-0 group-hover:w-3/4 bg-gradient-to-r from-indigo-500 to-purple-500"
+                  }`} />
+                  {/* Glow on hover */}
                   <span className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300" />
                 </NavLink>
               ))}
             </div>
 
             {/* Theme toggle */}
-            <button
+            {/* <button
               onClick={toggleMode}
               className="hidden md:inline-flex mr-3 p-2 rounded-xl border border-indigo-100 dark:border-slate-700 text-indigo-700 dark:text-indigo-200 hover:bg-indigo-50 dark:hover:bg-slate-800 transition"
               aria-label="Toggle dark mode"
               title="Toggle dark mode"
             >
               {mode === "dark" ? "🌙" : "☀️"}
-            </button>
+            </button> */}
 
             {/* Enhanced Desktop User Section */}
-            <div className="hidden md:flex items-center ml-2 gap-3">
+            <div className="hidden md:flex items-center ml-2 gap-3 relative" data-user-menu-root>
               {user ? (
-                <NavLink
-                  to="/auth"
-                  className="flex items-center gap-3 group px-4 py-2.5 rounded-2xl bg-gradient-to-r from-white/80 to-indigo-50/80  hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300"
-                >
-                  <div className="relative">
+                <>
+                  <button
+                    data-user-menu-button
+                    onClick={() => setUserMenuOpen((o) => !o)}
+                    className="flex items-center gap-3 px-3 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/70 hover:bg-white dark:hover:bg-slate-800 transition"
+                    aria-haspopup="menu"
+                    aria-expanded={userMenuOpen}
+                    title="Account menu"
+                  >
                     <img
                       src={user.imageUrl}
                       alt="Profile"
-                      className="w-10 h-10 rounded-full border-2 border-indigo-200 shadow-md group-hover:border-indigo-300 group-hover:scale-105 transition-all duration-300"
+                      className="w-9 h-9 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm"
                     />
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-white rounded-full shadow-sm" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-indigo-800 font-semibold text-sm max-w-32 truncate">
-                      {user.fullName || "User"}
+                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 max-w-40 truncate">
+                      {user.fullName || "Account"}
                     </span>
-                    <span className="text-indigo-500 text-xs opacity-80">
-                      Dashboard
-                    </span>
-                  </div>
-                  <svg
-                    className="w-4 h-4 text-indigo-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all duration-200"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </NavLink>
+                    <svg className={`w-4 h-4 text-slate-400 transition-transform ${userMenuOpen ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {userMenuOpen && (
+                    <div className="absolute right-0 top-[110%] w-56 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl overflow-hidden">
+                      <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{user.fullName}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.primaryEmailAddress?.emailAddress}</p>
+                      </div>
+                      <div className="py-1">
+                        <NavLink to="/dashboard" className="block px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">Dashboard</NavLink>
+                        <NavLink to="/auth" className="block px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">Profile</NavLink>
+                      </div>
+                      <div className="border-t border-slate-100 dark:border-slate-800">
+                        <button onClick={handleSignOut} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">Sign out</button>
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <NavLink
                   to="/auth"
                   className="relative px-8 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold shadow-xl shadow-indigo-500/25 hover:shadow-2xl hover:shadow-indigo-500/30 hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-purple-400 transition-all duration-300 overflow-hidden group"
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                    <svg
-                      className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                      />
-                    </svg>
                     Get Started
                   </span>
                   {/* Animated background */}
@@ -285,7 +313,9 @@ const Nav = () => {
                   to={link.to}
                   end={link.end}
                   className={({ isActive }) =>
-                    `flex items-center gap-4 px-6 py-4 rounded-2xl font-semibold text-base transition-all duration-300 group
+                    `flex items-center gap-4 px-6 py-4 rounded-2xl font-semibold text-base transition-all duration-300 group border-l-4 ${
+                      isActive ? "border-indigo-500" : "border-transparent"
+                    }
                     ${
                       isActive
                         ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
@@ -300,9 +330,6 @@ const Nav = () => {
                   }}
                   onClick={() => setMenuOpen(false)}
                 >
-                  <span className="text-2xl group-hover:scale-110 transition-transform duration-200">
-                    {link.icon}
-                  </span>
                   <span className="flex-1">{link.label}</span>
                   <svg
                     className="w-5 h-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200"

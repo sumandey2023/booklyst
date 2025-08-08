@@ -3,7 +3,9 @@ import { Typography, Box } from "@mui/material";
 
 const FromContentRenderer = ({ content, previews }) => {
   return (
-    <Box>
+    <Box sx={{
+      "& h1, & h2, & p": { color: (theme) => theme.palette.mode === 'dark' ? '#e2e8f0' : '#0f172a' },
+    }}>
       {content.map((block) => {
         switch (block.type) {
           case "title":
@@ -12,7 +14,7 @@ const FromContentRenderer = ({ content, previews }) => {
                 key={block.id}
                 variant="h3"
                 component="h1"
-                sx={{ fontWeight: 700, mb: 2 }}
+                sx={{ fontWeight: 800, mb: 2, letterSpacing: -0.5 }}
               >
                 {block.value}
               </Typography>
@@ -23,14 +25,14 @@ const FromContentRenderer = ({ content, previews }) => {
                 key={block.id}
                 variant="h5"
                 component="h2"
-                sx={{ fontWeight: 600, mb: 2 }}
+                sx={{ fontWeight: 700, mb: 2, color: (theme) => theme.palette.primary.main }}
               >
                 {block.value}
               </Typography>
             );
           case "text":
             return (
-              <Typography key={block.id} variant="body1" sx={{ mb: 2 }}>
+              <Typography key={block.id} variant="body1" sx={{ mb: 2, lineHeight: 1.9 }}>
                 {block.value}
               </Typography>
             );
@@ -41,7 +43,7 @@ const FromContentRenderer = ({ content, previews }) => {
                 component="img"
                 src={block.value || previews[block.id]}
                 alt="blog visual"
-                sx={{ maxWidth: "100%", borderRadius: 2, mb: 2 }}
+                sx={{ maxWidth: "100%", borderRadius: 3, mb: 3, boxShadow: 3 }}
               />
             );
           default:

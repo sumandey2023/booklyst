@@ -6,17 +6,8 @@ import {
   useUser,
   useClerk,
 } from "@clerk/clerk-react";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  Box,
-  Paper,
-} from "@mui/material";
-import { ToastContainer } from "react-toastify";
+import { Button, Typography } from "@mui/material";
+// Toasts are provided globally in App
 import useAuthStore from "../store/useAuthStore";
 import ProfilePage from "../pages/ProfilePage";
 import Cookies from "js-cookie";
@@ -99,29 +90,52 @@ const Auth = () => {
   // 🔐 Log userData when it changes
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-4 py-8">
+      {/* Steps indicator at top of auth flow */}
+      <div className="max-w-3xl mx-auto mb-6">
+        <AuthSteps activeStep={user ? 1 : 0} />
+      </div>
+
+      {/* Signed out view */}
       <SignedOut>
-        <MotionFade>
-          <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
-            <DialogTitle>Forgot Password</DialogTitle>
-            <DialogContent>
-              <Typography>
-                Reset instructions will be sent to your email.
-              </Typography>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose}>Close</Button>
-            </DialogActions>
-          </Dialog>
-        </MotionFade>
+        <div className="max-w-3xl mx-auto">
+          <MotionFade>
+            <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 shadow-2xl p-8 md:p-12 text-center">
+              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+                Welcome to Booklyst
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">
+                Sign in to continue and personalize your experience.
+              </p>
+              <div className="flex flex-col items-center gap-4">
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => openSignIn({ redirectUrl: "/auth" })}
+                  sx={{
+                    borderRadius: 2,
+                    px: 4,
+                    py: 1.5,
+                    textTransform: "none",
+                    fontWeight: 700,
+                  }}
+                >
+                  Sign In with Clerk
+                </Button>
+                <span className="text-xs text-slate-500">
+                  By continuing, you agree to our Terms and Privacy Policy.
+                </span>
+              </div>
+            </div>
+          </MotionFade>
+        </div>
       </SignedOut>
 
-      {/* Steps indicator at top of auth flow */}
-      <AuthSteps activeStep={1} />
-
-      <ProfilePage />
-      <ToastContainer position="top-center" autoClose={3000} theme="colored" />
-    </>
+      {/* Signed in view */}
+      <SignedIn>
+        <ProfilePage />
+      </SignedIn>
+    </div>
   );
 };
 

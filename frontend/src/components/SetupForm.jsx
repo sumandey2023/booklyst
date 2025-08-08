@@ -306,7 +306,7 @@ const SetupForm = () => {
           variant={isMobile ? "h5" : "h4"}
           fontWeight={700}
           gutterBottom
-          sx={{ mt: isMobile ? 1 : 3, color: primaryColor }}
+          sx={{ mt: isMobile ? 1 : 3, color: primaryColor, letterSpacing: -0.5 }}
         >
           Add Your Service Details
         </Typography>
@@ -381,8 +381,10 @@ const SetupForm = () => {
               variant="contained"
               disabled={loading}
               sx={{
-                fontWeight: 600,
-                borderRadius: 2,
+                fontWeight: 700,
+                borderRadius: 3,
+                px: 2,
+                py: 1.2,
                 bgcolor: primaryColor,
                 "&:hover": { bgcolor: lightPrimary },
               }}
@@ -401,8 +403,10 @@ const SetupForm = () => {
                 variant="outlined"
                 disabled={loading}
                 sx={{
-                  fontWeight: 600,
-                  borderRadius: 2,
+                  fontWeight: 700,
+                  borderRadius: 3,
+                  px: 2,
+                  py: 1.2,
                   bgcolor: "white",
                   color: primaryColor,
                   borderColor: primaryColor,
