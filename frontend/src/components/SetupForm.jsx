@@ -315,7 +315,7 @@ const SetupForm = () => {
 
         <Stack direction="column" spacing={2} sx={{ mb: 4 }}>
           <TextField
-            label="Blog Type"
+            label="Service Type"
             value={form.type}
             InputProps={{ readOnly: true }}
             fullWidth

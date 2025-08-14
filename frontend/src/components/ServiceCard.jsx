@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HandThumbUpIcon, HandThumbDownIcon } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
 import ServiceDetailModal from "./ServiceDetailModal";
@@ -36,6 +36,9 @@ const ServiceCard = ({ service }) => {
       setIsLiked(false);
     }
   };
+  useEffect(() => {
+    console.log(service);
+  }, []);
 
   const handleDislike = (e) => {
     e.stopPropagation();
@@ -66,12 +69,14 @@ const ServiceCard = ({ service }) => {
         {/* Hero IMAGE w/ Glass Overlay */}
         <div className="relative w-full h-56 overflow-hidden">
           {!imageLoaded && (
-            <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse" />)
-          }
+            <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse" />
+          )}
           <img
             src={imageUrl || dummyImg}
             alt="Service"
-            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
             onLoad={() => setImageLoaded(true)}
           />
           {/* Glass gradient + Shine */}
@@ -130,7 +135,11 @@ const ServiceCard = ({ service }) => {
               type="button"
             >
               <HandThumbUpIcon
-                className={`w-5 h-5 ${isLiked ? "text-green-600" : "text-gray-400 dark:text-slate-500 group-hover:text-green-700"}`}
+                className={`w-5 h-5 ${
+                  isLiked
+                    ? "text-green-600"
+                    : "text-gray-400 dark:text-slate-500 group-hover:text-green-700"
+                }`}
               />
               {likeCount}
             </button>
@@ -148,7 +157,11 @@ const ServiceCard = ({ service }) => {
               type="button"
             >
               <HandThumbDownIcon
-                className={`w-5 h-5 ${isDisliked ? "text-red-500" : "text-gray-400 dark:text-slate-500 group-hover:text-red-600"}`}
+                className={`w-5 h-5 ${
+                  isDisliked
+                    ? "text-red-500"
+                    : "text-gray-400 dark:text-slate-500 group-hover:text-red-600"
+                }`}
               />
               {dislikeCount}
             </button>
