@@ -22,7 +22,8 @@ const schema = z.object({
 });
 
 const BookService = () => {
-  const { ServiceDetails, Servicedetails } = useServiceBookStore();
+  const { ServiceDetails, Servicedetails, bookingrequest } =
+    useServiceBookStore();
   const locationHook = useLocation();
   const navigate = useNavigate();
   const passedService = locationHook.state?.service;
@@ -49,22 +50,6 @@ const BookService = () => {
   });
 
   const phoneValue = watch("phone");
-
-  useEffect(() => {
-    if (phoneValue && phoneValue.length >= 10) {
-      const checkPhone = async () => {
-        try {
-          const { data } = await axios.post("/api/validate-phone", {
-            phone: phoneValue,
-          });
-          setPhoneValid(data.valid);
-        } catch {
-          setPhoneValid(false);
-        }
-      };
-      checkPhone();
-    }
-  }, [phoneValue]);
 
   useEffect(() => {
     if (passedService?._id) {
@@ -96,16 +81,16 @@ const BookService = () => {
   } = ServiceDetails[0] || {};
   const uploaderInfo = uploader[0] || {};
 
+  // ✅ Updated booking handler (sending all details explicitly)
   const onSubmit = async (formData) => {
     try {
-      await axios.post("/api/book-service", {
-        ...formData,
-        serviceId: passedService._id,
-      });
+      const serviceId = passedService._id;
+     
+      await bookingrequest(serviceId, formData);
       toast.success("Booking request submitted!");
       reset();
-    } catch {
-      toast.error("Booking failed, try again.");
+    } catch (error) {
+      toast.error("Booking failed, try again.", error);
     }
   };
 

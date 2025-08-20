@@ -14,6 +14,18 @@ const useServiceBookStore = create((set) => ({
       console.error("Error fetching admin service data:", error);
     }
   },
+  bookingrequest: async (id, details) => {
+    try {
+      const res = await axiosInstanace.post(`/service/bookservice`, {
+        id,
+        details,
+      });
+
+      console.log(res.data); // log fresh data
+    } catch (error) {
+      console.error("Error fetching admin service data:", error);
+    }
+  },
 }));
 
 export default useServiceBookStore;

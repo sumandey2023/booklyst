@@ -4,6 +4,8 @@ const protectedRoute = require("../middleware/protectedRoute");
 const ServiceSchema = require("../models/serviceSchema");
 const Schedule = require("../models/usescheduleSchema");
 const mongoose = require("mongoose");
+const Booking = require("../models/bookingSchema");
+const User = require("../models/userSchema");
 router.get("/getServiceDetails", async (req, res) => {
   try {
     const services = await ServiceSchema.find();
@@ -70,5 +72,40 @@ router.get(
     }
   }
 );
+
+router.post("/bookservice", protectedRoute, async (req, res) => {
+  try {
+    const { id, details } = req.body;
+
+    if (!id || !details) {
+      return res.status(400).json({ success: false, message: "Invalid data" });
+    }
+    const user = await User.findOne({ email: req.user }).select("_id");
+    const request = user._id;
+
+    const newBooking = new Booking({
+      slot: details.slot,
+      date: details.date,
+      time: details.time,
+      phone: details.phone,
+      location: details.location,
+      payment: details.payment,
+      note: details.note || "",
+      requestBy: request,
+      requestFor: id, // ✅ service/provider id
+    });
+
+    await newBooking.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Booking created successfully",
+      booking: newBooking,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 
 module.exports = router;
